@@ -16,9 +16,9 @@ class qualityController {
     }
     async addBook(req, res) {
         try {
-            let { book_name } = req.body;
+            let { book_name, book_description } = req.body;
 
-            Package.addBook(book_name)
+            Package.addBook(book_name, book_description)
             return res.status(200).json({ message: 'Book has been added' })
         } catch (error) {
             console.log(error);

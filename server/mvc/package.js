@@ -13,5 +13,5 @@ console.log(process.env.DB_HOST)
 exports.getBooks = async () =>
     knex("public.books").select()
 
-exports.addBook = async (book_name) =>
-    knex("public.books").insert({ name: book_name })
+exports.addBook = async (book_name, book_description) =>
+    knex("public.books").insert({ name: book_name, description: book_description })
