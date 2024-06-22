@@ -9,7 +9,9 @@ const knex = require("knex")({
     },
 });
 console.log(process.env.DB_HOST)
-//
-exports.all_select = async () =>
-    knex("WorkGroups.5why").select()
 
+exports.getBooks = async () =>
+    knex("public.books").select()
+
+exports.addBook = async (book_name) =>
+    knex("public.books").insert({ name: book_name })

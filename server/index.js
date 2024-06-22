@@ -16,7 +16,7 @@ app.use(cors(corsOptions)); // middleware for cors
 app.use(express.json());    // middleware for json
 
 // router
-app.use('/api/users/', router)
+app.use('/api/books/', router)
 
 
 // start

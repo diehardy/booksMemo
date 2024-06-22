@@ -4,17 +4,27 @@ const router = require("./router")
 
 
 class qualityController {
-    async selectAll(req, res) {
+    async getBooks(req, res) {
         try {
-            const out_bd = await Package.all_select();
-            console.log(out_bd);
-            return res.status(200).json({ out_bd })
+            const all_books = await Package.getBooks();
+            console.log(all_books);
+            return res.status(200).json({ all_books })
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ message: "Не удалось выполнить задачу" })
+            return res.status(500).json({ message: "Task coudn't be completed." })
         }
     }
+    async addBook(req, res) {
+        try {
+            let { book_name } = req.body;
 
+            Package.addBook(book_name)
+            return res.status(200).json({ message: 'Book has been added' })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Book hasn't been added" })
+        }
+    }
 
 
 }
