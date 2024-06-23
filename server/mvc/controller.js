@@ -16,10 +16,22 @@ class qualityController {
     }
     async addBook(req, res) {
         try {
-            let { book_name, book_description } = req.body;
+            let { book_name, book_description, is_audiobook, audiobook_source } = req.body;
 
-            Package.addBook(book_name, book_description)
+            Package.addBook(book_name, book_description, is_audiobook, audiobook_source)
             return res.status(200).json({ message: 'Book has been added' })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Book hasn't been added" })
+        }
+    }
+
+    async deleteBook(req, res) {
+        try {
+            let { id_book } = req.body;
+
+            Package.deleteBook(id_book)
+            return res.status(200).json({ message: 'Book has been deleted' })
         } catch (error) {
             console.log(error);
             return res.status(500).json({ message: "Book hasn't been added" })

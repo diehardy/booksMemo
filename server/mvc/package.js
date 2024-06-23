@@ -11,7 +11,12 @@ const knex = require("knex")({
 console.log(process.env.DB_HOST)
 
 exports.getBooks = async () =>
-    knex("public.books").select()
+    knex("public.books").select().orderBy('id', 'asc')
 
-exports.addBook = async (book_name, book_description) =>
-    knex("public.books").insert({ name: book_name, description: book_description })
+exports.addBook = async (book_name, book_description, is_audiobook, audiobook_source) =>
+    knex("public.books").insert({
+        name: book_name, description: book_description, is_audiobook: is_audiobook,
+        audiobook_source: audiobook_source
+    })
+exports.deleteBook = async (id_book) =>
+    knex("public.books").where('id', id_book).delete()
