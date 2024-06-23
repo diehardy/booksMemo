@@ -17,7 +17,7 @@
           <v-text-field label="Name" class="px-5" v-model="book_name"></v-text-field>
           <v-text-field label="Description" class="px-5" v-model="book_description"></v-text-field>
           <v-checkbox v-model="is_audiobook" label="Audiobook" class="ml-5"></v-checkbox>
-          <v-text-field v-show="is_audiobook" label="Source of audiobook" class="px-5"
+          <v-text-field v-show="is_audiobook" label="Source of an audiobook" class="px-5"
             v-model="audiobook_source"></v-text-field>
 
           <v-card-actions>
@@ -38,20 +38,50 @@
           <span class="font-weight-black">{{ item.name }}</span>
 
           <v-tooltip
-            :text="item.is_audiobook ? `Audibook is available at ${item.audiobook_source}` : 'Audiobook isn\'t available'">
+            :text="item.is_audiobook ? `Audiobook is available at ${item.audiobook_source}` : 'Audiobook isn\'t available'">
             <template v-slot:activator="{ props }">
-              <v-icon v-bind="props" icon="mdi-headphones" placeholder="audiobook" class="ml-5"
-                :color="item.is_audiobook ? 'green' : 'red'"></v-icon>
+              <a :href="item.audiobook_source" target="_blank">
+                <v-icon v-bind="props" icon="mdi-headphones" placeholder="audiobook" class="ml-5"
+                  :color="item.is_audiobook ? 'green' : 'red'"></v-icon>
+              </a>
             </template>
           </v-tooltip>
         </template>
-        <v-row class="pa-5">
-          <v-btn text="Delete" variant="flat" color="red" prepend-icon="mdi-delete" class="mr-5"
-            @click="deleteBook(item.id)"></v-btn>
-          <v-btn text="Edit" variant="flat" color="purple" prepend-icon="mdi-file-edit-outline"
-            @click="editBook(item.id)"></v-btn>
+        <v-row class="pa-5 ga-5">
           <v-btn text="Contents" variant="flat" color="purple" prepend-icon="mdi-table-of-contents"
             @click="editBook(item.id)"></v-btn>
+
+          <v-dialog max-width="500" v-model="showEditingDialog">
+            <template v-slot:activator="{ props: activatorProps }">
+              <v-row>
+                <v-col>
+                  <v-btn text="Edit" v-bind="activatorProps" variant="flat" color="purple"
+                    prepend-icon="mdi-file-edit-outline" @click="editBook(item.id)"></v-btn>
+                </v-col>
+              </v-row>
+
+            </template>
+            <template v-slot:default="{ isActive }">
+              <v-card :title='item.name'>
+                <v-text-field label="Name" class="px-5" v-model="book_name"></v-text-field>
+                <v-text-field label="Description" class="px-5" v-model="book_description"></v-text-field>
+                <v-checkbox v-model="is_audiobook" label="Audiobook" class="ml-5"></v-checkbox>
+                <v-text-field v-show="is_audiobook" label="Source of an audiobook" class="px-5"
+                  v-model="audiobook_source"></v-text-field>
+
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn text="Close" variant="flat" @click="isActive.value = false"></v-btn>
+                  <v-btn text="Add" color="success" variant="flat" @click="addBook(), isActive.value = false"></v-btn>
+                </v-card-actions>
+              </v-card>
+            </template>
+          </v-dialog>
+
+
+
+          <v-btn text="Delete" variant="flat" color="red" prepend-icon="mdi-delete" class="mr-5"
+            @click="deleteBook(item.id)"></v-btn>
         </v-row>
         <v-card-text class="bg-surface-light pt-4">
           {{ item.description }}
@@ -78,6 +108,7 @@ export default {
   data() {
     return {
       showAddingDialog: false,
+      showEditingDialog: false,
       book_name: null,
       book_description: null,
       list_of_books: [],
@@ -139,13 +170,26 @@ export default {
         });
     },
     editBook(id_book) {
-      console.log(id_book)
+      this.getBookById(id_book)
     },
     resetAddingForm() {
       this.book_name = null;
       this.book_description = null;
       this.is_audiobook = false;
       this.audiobook_source = null;
+    },
+    getBookById(id_book) {
+      console.log('gotten id:', id_book)
+      httpServer
+        .post("/get-by-id", {
+          id_book: id_book
+        })
+        .then((response) => {
+          console.log(response.data)
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
   }
 }

@@ -38,6 +38,19 @@ class qualityController {
         }
     }
 
+    async getBookById(req, res) {
+        try {
+            let { id_book } = req.body;
+
+            const book = await Package.getBookById(id_book)
+            if (book[0]) return res.status(200).json(book[0])
+            else return res.status(404).json({ message: "Book not found" })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Book hasn't been added" })
+        }
+    }
 
 }
 

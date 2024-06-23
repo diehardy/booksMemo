@@ -20,3 +20,7 @@ exports.addBook = async (book_name, book_description, is_audiobook, audiobook_so
     })
 exports.deleteBook = async (id_book) =>
     knex("public.books").where('id', id_book).delete()
+
+
+exports.getBookById = async (id_book) =>
+    knex("public.books").where('id', id_book).select()
