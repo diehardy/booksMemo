@@ -14,11 +14,12 @@ class qualityController {
             return res.status(500).json({ message: "Task coudn't be completed." })
         }
     }
-    async addBook(req, res) {
+    async saveBook(req, res) {
         try {
-            let { book_name, book_description, is_audiobook, audiobook_source } = req.body;
+            let { id, book_name, book_description, is_audiobook, audiobook_source } = req.body;
+            if (id) Package.editBook(id, book_name, book_description, is_audiobook, audiobook_source)
+            else Package.addBook(book_name, book_description, is_audiobook, audiobook_source)
 
-            Package.addBook(book_name, book_description, is_audiobook, audiobook_source)
             return res.status(200).json({ message: 'Book has been added' })
         } catch (error) {
             console.log(error);

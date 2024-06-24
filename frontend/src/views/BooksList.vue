@@ -26,6 +26,7 @@
             </template>
           </v-tooltip>
         </template>
+
         <v-row class="pa-5 ga-5">
           <v-btn text="Contents" variant="flat" color="purple" prepend-icon="mdi-table-of-contents"
             @click="getBookById(item.id)"></v-btn>
@@ -92,7 +93,6 @@ export default {
         });
     },
     getBookById(id_book) {
-      console.log('chosen book', id_book)
       httpServer
         .post("/get-by-id", {
           id_book: id_book

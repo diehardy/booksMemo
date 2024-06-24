@@ -11,7 +11,7 @@
                     <v-spacer></v-spacer>
                     <v-btn text="Close" variant="flat" @click="isActive.value = false"></v-btn>
                     <v-btn :text="copyBook.id ? 'Save' : 'Add'" color="success" variant="flat"
-                        @click="addBook(), isActive.value = false"></v-btn>
+                        @click="saveBook(), isActive.value = false"></v-btn>
                 </v-card-actions>
             </v-card>
         </template>
@@ -51,9 +51,10 @@ export default {
     },
 
     methods: {
-        addBook() {
+        saveBook() {
             httpServer
-                .post("/add", {
+                .post("/save", {
+                    id: this.copyBook.id,
                     book_name: this.copyBook.name,
                     book_description: this.copyBook.description,
                     is_audiobook: this.copyBook.is_audiobook,
