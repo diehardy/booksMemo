@@ -64,7 +64,7 @@ export default {
                     console.log(error);
                 });
             this.resetAddingForm();
-            //this.getBooks();
+            this.$emit('bookSaved');
         },
         resetAddingForm() {
             this.copyBook.book_name = null;
