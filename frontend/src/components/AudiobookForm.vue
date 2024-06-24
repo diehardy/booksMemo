@@ -70,6 +70,7 @@ export default {
             this.$emit('bookSaved');
         },
         resetAddingForm() {
+            this.copyBook.id = null;
             this.copyBook.name = null;
             this.copyBook.description = null;
             this.copyBook.is_audiobook = false;
