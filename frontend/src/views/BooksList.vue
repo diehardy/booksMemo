@@ -2,34 +2,13 @@
   <div>
     <h1 class="mt-2">Your books</h1>
 
-
-    <v-dialog max-width="500" v-model="showAddingDialog">
-      <template v-slot:activator="{ props: activatorProps }">
-        <v-row>
-          <v-col>
-            <v-btn class="ml-5" v-bind="activatorProps" color="success" text="Add a book" variant="flat"></v-btn>
-          </v-col>
-        </v-row>
-
-      </template>
-      <template v-slot:default="{ isActive }">
-        <v-card title="Adding a new book">
-          <v-text-field label="Name" class="px-5" v-model="book_name"></v-text-field>
-          <v-text-field label="Description" class="px-5" v-model="book_description"></v-text-field>
-          <v-checkbox v-model="is_audiobook" label="Audiobook" class="ml-5"></v-checkbox>
-          <v-text-field v-show="is_audiobook" label="Source of an audiobook" class="px-5"
-            v-model="audiobook_source"></v-text-field>
-
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn text="Close" variant="flat" @click="isActive.value = false"></v-btn>
-            <v-btn text="Add" color="success" variant="flat" @click="addBook(), isActive.value = false"></v-btn>
-          </v-card-actions>
-        </v-card>
-      </template>
-    </v-dialog>
-
-
+    <v-row>
+      <v-col>
+        <v-btn class="ml-5" color="success" text="Add a book" variant="flat"
+          @click="showAudiobookDialogue = true"></v-btn>
+      </v-col>
+    </v-row>
+    <AudiobookForm :showAddingDialog="showAudiobookDialogue" :book="book" @close="updateDialogStatus" />
 
     <v-row class="d-flex justify-center flex-wrap ga-5  ma-5">
       <v-card color="info" v-for="item in list_of_books" :key="item" cols="2" class="mx-auto text-left"
@@ -51,32 +30,9 @@
           <v-btn text="Contents" variant="flat" color="purple" prepend-icon="mdi-table-of-contents"
             @click="editBook(item.id)"></v-btn>
 
-          <v-dialog max-width="500" v-model="showEditingDialog">
-            <template v-slot:activator="{ props: activatorProps }">
-              <v-row>
-                <v-col>
-                  <v-btn text="Edit" v-bind="activatorProps" variant="flat" color="purple"
-                    prepend-icon="mdi-file-edit-outline" @click="editBook(item.id)"></v-btn>
-                </v-col>
-              </v-row>
 
-            </template>
-            <template v-slot:default="{ isActive }">
-              <v-card :title='item.name'>
-                <v-text-field label="Name" class="px-5" v-model="book_name"></v-text-field>
-                <v-text-field label="Description" class="px-5" v-model="book_description"></v-text-field>
-                <v-checkbox v-model="is_audiobook" label="Audiobook" class="ml-5"></v-checkbox>
-                <v-text-field v-show="is_audiobook" label="Source of an audiobook" class="px-5"
-                  v-model="audiobook_source"></v-text-field>
-
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn text="Close" variant="flat" @click="isActive.value = false"></v-btn>
-                  <v-btn text="Add" color="success" variant="flat" @click="addBook(), isActive.value = false"></v-btn>
-                </v-card-actions>
-              </v-card>
-            </template>
-          </v-dialog>
+          <v-btn text="Edit" v-bind="activatorProps" variant="flat" color="purple" prepend-icon="mdi-file-edit-outline"
+            @click="editBook(item.id)"></v-btn>
 
 
 
@@ -103,50 +59,25 @@
 <script>
 
 import { httpServer } from "@/main"
+import AudiobookForm from "@/components/AudiobookForm.vue"
 
 export default {
   data() {
     return {
-      showAddingDialog: false,
-      showEditingDialog: false,
-      book_name: null,
-      book_description: null,
+      showAudiobookDialogue: false,
+      book: {
+        book_name: null,
+        book_description: null,
+        is_audiobook: false,
+        audiobook_source: null,
+      },
       list_of_books: [],
-      is_audiobook: false,
-      audiobook_source: null,
-    }
-  },
-  watch: {
-    showAddingDialog: function (val) {
-      if (val) {
-        this.resetAddingForm();
-      }
-    },
-    is_audiobook: function (val) {
-      if (!val) this.audiobook_source = null
     }
   },
   mounted() {
     this.getBooks();
   },
   methods: {
-    addBook() {
-      httpServer
-        .post("/add", {
-          book_name: this.book_name,
-          book_description: this.book_description,
-          is_audiobook: this.is_audiobook,
-          audiobook_source: this.audiobook_source,
-        })
-        .then((response) => {
-          console.log(response.data)
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-      this.resetAddingForm();
-      this.getBooks();
-    },
     getBooks() {
       httpServer
         .get("/get")
@@ -172,14 +103,7 @@ export default {
     editBook(id_book) {
       this.getBookById(id_book)
     },
-    resetAddingForm() {
-      this.book_name = null;
-      this.book_description = null;
-      this.is_audiobook = false;
-      this.audiobook_source = null;
-    },
     getBookById(id_book) {
-      console.log('gotten id:', id_book)
       httpServer
         .post("/get-by-id", {
           id_book: id_book
@@ -190,8 +114,12 @@ export default {
         .catch((error) => {
           console.log(error);
         });
-    }
-  }
+    },
+    updateDialogStatus(currentDialogueStatus) { this.showAudiobookDialogue = currentDialogueStatus },
+  },
+  components: {
+    AudiobookForm,
+  },
 }
 </script>
 
