@@ -16,7 +16,6 @@
         prepend-icon="mdi-book-open-blank-variant" width="1200" variant="outlined">
         <template v-slot:title>
           <span class="font-weight-black">{{ item.name }}</span>
-
           <v-tooltip
             :text="item.is_audiobook ? `Audiobook is available at ${item.audiobook_source}` : 'Audiobook isn\'t available'">
             <template v-slot:activator="{ props }">
@@ -29,14 +28,9 @@
         </template>
         <v-row class="pa-5 ga-5">
           <v-btn text="Contents" variant="flat" color="purple" prepend-icon="mdi-table-of-contents"
-            @click="editBook(item.id)"></v-btn>
-
-
+            @click="getBookById(item.id)"></v-btn>
           <v-btn text="Edit" v-bind="activatorProps" variant="flat" color="purple" prepend-icon="mdi-file-edit-outline"
-            @click="editBook(item.id)"></v-btn>
-
-
-
+            @click="getBookById(item.id), showAudiobookDialogue = true"></v-btn>
           <v-btn text="Delete" variant="flat" color="red" prepend-icon="mdi-delete" class="mr-5"
             @click="deleteBook(item.id)"></v-btn>
         </v-row>
@@ -45,11 +39,6 @@
         </v-card-text>
       </v-card>
     </v-row>
-
-
-
-
-
 
     <v-pagination :length="4"></v-pagination>
 
@@ -67,8 +56,9 @@ export default {
     return {
       showAudiobookDialogue: false,
       book: {
-        book_name: null,
-        book_description: null,
+        id: null,
+        name: null,
+        escription: null,
         is_audiobook: false,
         audiobook_source: null,
       },
@@ -101,16 +91,15 @@ export default {
           console.log(error);
         });
     },
-    editBook(id_book) {
-      this.getBookById(id_book)
-    },
     getBookById(id_book) {
+      console.log('chosen book', id_book)
       httpServer
         .post("/get-by-id", {
           id_book: id_book
         })
         .then((response) => {
-          console.log(response.data)
+          this.book = { ...response.data }
+          console.log(this.book)
         })
         .catch((error) => {
           console.log(error);
