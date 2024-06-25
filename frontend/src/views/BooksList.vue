@@ -10,12 +10,12 @@
     </v-row>
     <AudiobookForm :showAddingDialog="showAudiobookDialogue" :book="book" @close="updateDialogStatus"
       @bookSaved="getBooks" />
-
+    <ContentsForm :showContentsDialog="showContentsDialog" @closeContents="updateContentsDialog" />
     <v-row class="d-flex justify-center flex-wrap ga-5  ma-5">
       <v-card color="info" v-for="item in list_of_books" :key="item" cols="2" class="mx-auto text-left"
         prepend-icon="mdi-book-open-blank-variant" width="1200" variant="outlined">
         <template v-slot:title>
-          <span class="font-weight-black">{{ item.name }}</span>
+          <span class="font-weight-black" style="white-space: pre-wrap;">{{ item.name }}</span>
           <v-tooltip
             :text="item.is_audiobook ? `Audiobook is available at ${item.audiobook_source}` : 'Audiobook isn\'t available'">
             <template v-slot:activator="{ props }">
@@ -29,7 +29,7 @@
 
         <v-row class="pa-5 ga-5">
           <v-btn text="Contents" variant="flat" color="purple" prepend-icon="mdi-table-of-contents"
-            @click="getBookById(item.id)"></v-btn>
+            @click="getBookById(item.id), showContentsDialog = true"></v-btn>
           <v-btn text="Edit" v-bind="activatorProps" variant="flat" color="purple" prepend-icon="mdi-file-edit-outline"
             @click="getBookById(item.id), showAudiobookDialogue = true"></v-btn>
           <v-btn text="Delete" variant="flat" color="red" prepend-icon="mdi-delete" class="mr-5"
@@ -51,11 +51,13 @@
 
 import { httpServer } from "@/main"
 import AudiobookForm from "@/components/AudiobookForm.vue"
+import ContentsForm from "@/components/ContentsForm.vue"
 
 export default {
   data() {
     return {
       showAudiobookDialogue: false,
+      showContentsDialog: false,
       book: {
         id: null,
         name: null,
@@ -99,16 +101,17 @@ export default {
         })
         .then((response) => {
           this.book = { ...response.data }
-          console.log(this.book)
         })
         .catch((error) => {
           console.log(error);
         });
     },
     updateDialogStatus(currentDialogueStatus) { this.showAudiobookDialogue = currentDialogueStatus },
+    updateContentsDialog(currentDialogueStatus) { this.showContentsDialog = currentDialogueStatus },
   },
   components: {
     AudiobookForm,
+    ContentsForm,
   },
 }
 </script>

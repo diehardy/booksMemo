@@ -60,8 +60,8 @@ export default {
                     is_audiobook: this.copyBook.is_audiobook,
                     audiobook_source: this.copyBook.audiobook_source,
                 })
-                .then((response) => {
-                    console.log(response.data)
+                .then(() => {
+                    //console.log(response.data)
                 })
                 .catch((error) => {
                     console.log(error);
