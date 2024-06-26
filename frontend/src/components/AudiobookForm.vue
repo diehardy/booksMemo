@@ -9,9 +9,11 @@
                     v-model="copyBook.audiobook_source"></v-text-field>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn text="Close" variant="flat" @click="isActive.value = false"></v-btn>
-                    <v-btn :text="copyBook.id ? 'Save' : 'Add'" color="success" variant="flat"
-                        @click="saveBook(), isActive.value = false"></v-btn>
+                    <v-btn text="Close" variant="flat" @click="isActive.value = false"
+                        :color="copyBook.name ? 'grey-lighten-4' : ''"></v-btn>
+                    <v-btn :text="copyBook.id ? 'Save' : 'Add'" variant="flat"
+                        :color="copyBook.name ? 'grey-darken-4' : ''"
+                        @click=" saveBook(), isActive.value = false"></v-btn>
                 </v-card-actions>
             </v-card>
         </template>

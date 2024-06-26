@@ -1,21 +1,21 @@
 <template>
   <div>
-    <h1 class="mt-2">Your books</h1>
+    <h1 class="mt-2 text-uppercase ">Your books</h1>
 
     <v-row>
       <v-col>
-        <v-btn class="ml-5" color="success" text="Add a book" variant="flat"
-          @click="showAudiobookDialogue = true"></v-btn>
+        <v-btn class="ml-5" text="Add a book" variant="outlined" @click="showAudiobookDialogue = true"></v-btn>
       </v-col>
     </v-row>
     <AudiobookForm :showAddingDialog="showAudiobookDialogue" :book="book" @close="updateDialogStatus"
       @bookSaved="getBooks" />
     <ContentsForm :showContentsDialog="showContentsDialog" @closeContents="updateContentsDialog" />
+
     <v-row class="d-flex justify-center flex-wrap ga-5  ma-5">
-      <v-card color="info" v-for="item in list_of_books" :key="item" cols="2" class="mx-auto text-left"
+      <v-card color="grey-darken-2" v-for="item in list_of_books" :key="item" cols="2" class="mx-auto text-left"
         prepend-icon="mdi-book-open-blank-variant" width="1200" variant="outlined">
         <template v-slot:title>
-          <span class="font-weight-black" style="white-space: pre-wrap;">{{ item.name }}</span>
+          <span class="font-weight-black new-line">{{ item.name }}</span>
           <v-tooltip
             :text="item.is_audiobook ? `Audiobook is available at ${item.audiobook_source}` : 'Audiobook isn\'t available'">
             <template v-slot:activator="{ props }">
@@ -28,11 +28,11 @@
         </template>
 
         <v-row class="pa-5 ga-5">
-          <v-btn text="Contents" variant="flat" color="purple" prepend-icon="mdi-table-of-contents"
+          <v-btn text="Contents" variant="outlined" prepend-icon="mdi-table-of-contents"
             @click="getBookById(item.id), showContentsDialog = true"></v-btn>
-          <v-btn text="Edit" v-bind="activatorProps" variant="flat" color="purple" prepend-icon="mdi-file-edit-outline"
+          <v-btn text="Edit" v-bind="activatorProps" variant="outlined" prepend-icon="mdi-file-edit-outline"
             @click="getBookById(item.id), showAudiobookDialogue = true"></v-btn>
-          <v-btn text="Delete" variant="flat" color="red" prepend-icon="mdi-delete" class="mr-5"
+          <v-btn text="Delete" variant="outlined" prepend-icon="mdi-delete" class="mr-5"
             @click="deleteBook(item.id)"></v-btn>
         </v-row>
         <v-card-text class="bg-surface-light pt-4">
@@ -41,7 +41,7 @@
       </v-card>
     </v-row>
 
-    <v-pagination :length="4"></v-pagination>
+    <v-pagination color="grey-darken-2" :length="4"></v-pagination>
 
 
   </div>
@@ -116,4 +116,8 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+.new-line {
+  white-space: pre-wrap;
+}
+</style>
