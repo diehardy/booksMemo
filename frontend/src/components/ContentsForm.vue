@@ -11,9 +11,10 @@
                     <h3 class="new-line">{{ copyBook.name }}</h3>
                 </v-card-title>
 
-                <h3 class="mt-2 text-center text-bold">CHAPTERS</h3>
-
-                <v-expansion-panels variant="inset" class="pa-5" color="grey-lighten-5">
+                <h3 class="mt-2 text-center text-bold">
+                    {{ isObjectEmpty(chapters) ? 'CHAPTERS' : 'You need to add chapters' }}</h3>
+                <v-expansion-panels variant="inset" class="pa-5" color="grey-lighten-5"
+                    v-show="isObjectEmpty(chapters)">
                     <v-expansion-panel v-for="chapter in chapters" :key="chapter">
                         <v-expansion-panel-title>
                             <div class="d-flex ga-5 align-center">
@@ -26,9 +27,11 @@
                         </v-expansion-panel-title>
                         <v-expansion-panel-text>
 
-                            <h4 class="mb-2 text-center text-bold">SECTIONS</h4>
+                            <h4 class="mb-2 text-center text-bold" v-show="isObjectEmpty(chapter.sections)">SECTIONS
+                            </h4>
 
-                            <v-expansion-panels variant="inset" color="grey-lighten-5">
+                            <v-expansion-panels variant="inset" color="grey-lighten-5"
+                                v-show="isObjectEmpty(chapter.sections)">
                                 <v-expansion-panel v-for="section in chapter.sections" :key="section">
 
                                     <v-expansion-panel-title>
@@ -40,8 +43,9 @@
                                         </div>
                                     </v-expansion-panel-title>
 
-                                    <v-expansion-panel-text>
-                                        <h5 class="mb-2 text-center text-bold">SUBSECTIONS</h5>
+                                    <v-expansion-panel-text v-show="isObjectEmpty(section.subsections)">
+                                        <h5 class="mb-2 text-center text-bold"
+                                            v-show="isObjectEmpty(section.subsections)">SUBSECTIONS</h5>
                                         <v-card v-for="subsection in section.subsections" :key="subsection"
                                             class="my-2 pa-2">
                                             <div class="d-flex ga-5 align-center flex-column flex-md-row">
@@ -101,6 +105,9 @@ export default {
                         console.log(error);
                     });
             }
+        },
+        isObjectEmpty(objToCheck) {
+            return objToCheck && Object.keys(objToCheck).length !== 0;
         }
     },
     props: {
