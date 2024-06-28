@@ -12,9 +12,8 @@
                 </v-card-title>
 
                 <h3 class="mt-2 text-center text-bold">
-                    {{ isObjectEmpty(chapters) ? 'CHAPTERS' : 'You need to add chapters' }}</h3>
-                <v-expansion-panels variant="inset" class="pa-5" color="grey-lighten-5"
-                    v-show="isObjectEmpty(chapters)">
+                    {{ hasChapters ? 'CHAPTERS' : 'You need to add chapters' }}</h3>
+                <v-expansion-panels variant="inset" class="pa-5" color="grey-lighten-5" v-show="hasChapters">
                     <v-expansion-panel v-for="chapter in chapters" :key="chapter">
                         <v-expansion-panel-title>
                             <div class="d-flex ga-5 align-center">
@@ -27,11 +26,11 @@
                         </v-expansion-panel-title>
                         <v-expansion-panel-text>
 
-                            <h4 class="mb-2 text-center text-bold" v-show="isObjectEmpty(chapter.sections)">SECTIONS
+                            <h4 class="mb-2 text-center text-bold" v-show="chapterHasSections(chapter)">SECTIONS
                             </h4>
 
                             <v-expansion-panels variant="inset" color="grey-lighten-5"
-                                v-show="isObjectEmpty(chapter.sections)">
+                                v-show="chapterHasSections(chapter)">
                                 <v-expansion-panel v-for="section in chapter.sections" :key="section">
 
                                     <v-expansion-panel-title>
@@ -43,9 +42,9 @@
                                         </div>
                                     </v-expansion-panel-title>
 
-                                    <v-expansion-panel-text v-show="isObjectEmpty(section.subsections)">
-                                        <h5 class="mb-2 text-center text-bold"
-                                            v-show="isObjectEmpty(section.subsections)">SUBSECTIONS</h5>
+                                    <v-expansion-panel-text v-show="sectionHasSubsections(section)">
+                                        <h5 class="mb-2 text-center text-bold" v-show="sectionHasSubsections(section)">
+                                            SUBSECTIONS</h5>
                                         <v-card v-for="subsection in section.subsections" :key="subsection"
                                             class="my-2 pa-2">
                                             <div class="d-flex ga-5 align-center flex-column flex-md-row">
@@ -136,6 +135,17 @@ export default {
         isActive: function (val) { this.$emit('closeContents', val); },
         book: function (bookValue) { this.copyBook = bookValue, this.getChapters(this.copyBook.id) }
     },
+    computed: {
+        hasChapters() {
+            return Object.keys(this.chapters).length !== 0;
+        },
+        chapterHasSections() {
+            return chapter => Object.keys(chapter.sections).length !== 0;
+        },
+        sectionHasSubsections() {
+            return section => Object.keys(section.subsections).length !== 0;
+        }
+    }
 }
 </script>
 
