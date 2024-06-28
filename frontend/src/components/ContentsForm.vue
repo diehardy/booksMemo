@@ -8,7 +8,7 @@
             <v-card>
                 <v-card-title class="text-center text-bold mt-2" color="grey-darken-2">
                     <h2 class="text-uppercase new-line">Contents of the book</h2>
-                    {{ copyBook }}
+                    <h3 class="new-line">{{ copyBook.name }}</h3>
                 </v-card-title>
 
                 <h3 class="mt-2 text-center text-bold">CHAPTERS</h3>
@@ -88,14 +88,18 @@ import { httpServer } from "@/main"
 export default {
     methods: {
         getChapters(id_book) {
-            httpServer
-                .post("/get-chapters", { id_book: id_book })
-                .then((response) => {
-                    console.log(response.data)
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+            // this method is calling when book is changed, but it can be changed on editing
+            // i'm check  if dialogue of contents is active
+            if (this.isActive) {
+                httpServer
+                    .post("/get-chapters", { id_book: id_book })
+                    .then((response) => {
+                        console.log(response.data)
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            }
         }
     },
     props: {
@@ -119,7 +123,6 @@ export default {
         showContentsDialog: function (val) {
             if (val) {
                 this.isActive = val
-                // this.resetAddingForm()
             }
         },
         isActive: function (val) { this.$emit('closeContents', val); },

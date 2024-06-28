@@ -66,7 +66,6 @@ class qualityController {
 
             const chapters = await Package.getChapters(id_book)
 
-            // console.log('left join:', chapters)
             let contents = {};
             chapters.forEach((row) => {
                 console.log('row:', row)
@@ -100,12 +99,6 @@ class qualityController {
 
 
             })
-
-            console.log('contents:', contents)
-
-
-
-
 
             if (chapters[0]) return res.status(200).json(contents)
             else return res.status(404).json({ message: "No chapters" })
