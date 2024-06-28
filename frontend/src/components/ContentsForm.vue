@@ -14,10 +14,10 @@
                 <h3 class="mt-2 text-center text-bold">CHAPTERS</h3>
 
                 <v-expansion-panels variant="inset" class="pa-5" color="grey-lighten-5">
-                    <v-expansion-panel v-for="i in 3" :key="i">
+                    <v-expansion-panel v-for="chapter in chapters" :key="chapter">
                         <v-expansion-panel-title>
                             <div class="d-flex ga-5 align-center">
-                                <h4>chapter {{ i
+                                <h4>{{ chapter.chapter_name
                                     }}</h4>
                                 <v-icon icon="mdi-pencil" @click.stop="console.log('edit')"></v-icon>
                                 <v-icon icon="mdi-delete" @click.stop="console.log('deleted')"></v-icon>
@@ -29,11 +29,11 @@
                             <h4 class="mb-2 text-center text-bold">SECTIONS</h4>
 
                             <v-expansion-panels variant="inset" color="grey-lighten-5">
-                                <v-expansion-panel v-for="d in 3" :key="d">
+                                <v-expansion-panel v-for="section in chapter.sections" :key="section">
 
                                     <v-expansion-panel-title>
                                         <div class="d-flex ga-5 align-center">
-                                            <h4>section {{ d
+                                            <h4>{{ section.section_name
                                                 }}</h4>
                                             <v-icon icon="mdi-pencil" @click.stop="console.log('edit')"></v-icon>
                                             <v-icon icon="mdi-delete" @click.stop="console.log('deleted')"></v-icon>
@@ -42,11 +42,10 @@
 
                                     <v-expansion-panel-text>
                                         <h5 class="mb-2 text-center text-bold">SUBSECTIONS</h5>
-
-                                        <v-card v-for="m in 3" :key="m" class="my-2 pa-2">
+                                        <v-card v-for="subsection in section.subsections" :key="subsection"
+                                            class="my-2 pa-2">
                                             <div class="d-flex ga-5 align-center flex-column flex-md-row">
-                                                <h4>subsection {{ d
-                                                    }}</h4>
+                                                <h4> {{ subsection.subsection_name }}</h4>
                                                 <v-icon icon="mdi-pencil" @click.stop="console.log('edit')"></v-icon>
                                                 <v-icon icon="mdi-delete" @click.stop="console.log('deleted')"></v-icon>
                                             </div>
@@ -88,13 +87,15 @@ import { httpServer } from "@/main"
 export default {
     methods: {
         getChapters(id_book) {
+            this.chapters = {};
             // this method is calling when book is changed, but it can be changed on editing
             // i'm check  if dialogue of contents is active
             if (this.isActive) {
                 httpServer
                     .post("/get-chapters", { id_book: id_book })
                     .then((response) => {
-                        console.log(response.data)
+                        this.chapters = response.data
+                        console.log('chapters', this.chapters)
                     })
                     .catch((error) => {
                         console.log(error);
@@ -116,7 +117,7 @@ export default {
         return {
             isActive: false,
             copyBook: { ...this.book },
-            chapters: [],
+            chapters: {},
         }
     },
     watch: {
