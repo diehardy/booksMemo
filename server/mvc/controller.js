@@ -4,6 +4,9 @@ const router = require("./router")
 
 
 class qualityController {
+
+
+    // BOOKS
     async getBooks(req, res) {
         try {
             const all_books = await Package.getBooks();
@@ -52,6 +55,70 @@ class qualityController {
             return res.status(500).json({ message: "Book hasn't been added" })
         }
     }
+
+    // CONTENTS
+
+
+
+    async getChapters(req, res) {
+        try {
+            let { id_book } = req.body;
+
+            const chapters = await Package.getChapters(id_book)
+
+            // console.log('left join:', chapters)
+            let contents = {};
+            chapters.forEach((row) => {
+                console.log('row:', row)
+                // checking chapters
+                if (!contents[`chapter_${row.id_chapter}`]) {
+                    contents[`chapter_${row.id_chapter}`] = {
+                        id_chapter: row.id_chapter,
+                        chapter_name: row.chapter_name,
+                        sections: {}
+                    }
+                }
+                // checking sections
+                if (!contents[`chapter_${row.id_chapter}`].sections[`section_${row.id_section}`] && row.id_section) {
+                    contents[`chapter_${row.id_chapter}`].sections[`section_${row.id_section}`] = {
+                        id_section: row.id_section,
+                        section_name: row.section_name,
+                        subsections: {}
+                    }
+                }
+
+                // checking subsections
+                if (row.id_subsection) {
+                    if (!contents[`chapter_${row.id_chapter}`].sections[`section_${row.id_section}`].subsections[`subsection_${row.id_subsection}`]) {
+                        contents[`chapter_${row.id_chapter}`].sections[`section_${row.id_section}`].subsections[`subsection_${row.id_subsection}`] = {
+                            id_subsection: row.id_subsection,
+                            subsection_name: row.subsection_name,
+                        }
+                    }
+                }
+
+
+
+            })
+
+            console.log('contents:', contents)
+
+
+
+
+
+            if (chapters[0]) return res.status(200).json(contents)
+            else return res.status(404).json({ message: "No chapters" })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Book hasn't been added" })
+        }
+    }
+
+
+
+
 
 }
 

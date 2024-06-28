@@ -9,7 +9,7 @@
     </v-row>
     <AudiobookForm :showAddingDialog="showAudiobookDialogue" :book="book" @close="updateDialogStatus"
       @bookSaved="getBooks" />
-    <ContentsForm :showContentsDialog="showContentsDialog" @closeContents="updateContentsDialog" />
+    <ContentsForm :showContentsDialog="showContentsDialog" @closeContents="updateContentsDialog" :book="book" />
 
     <v-row class="d-flex justify-center flex-wrap ga-5  ma-5">
       <v-card color="grey-darken-2" v-for="item in list_of_books" :key="item" cols="2" class="mx-auto text-left"

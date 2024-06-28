@@ -4,9 +4,11 @@
 
     <v-dialog max-width="1200" v-model="isActive">
         <template v-slot:default="{ isActive }">
+
             <v-card>
                 <v-card-title class="text-center text-bold mt-2" color="grey-darken-2">
                     <h2 class="text-uppercase new-line">Contents of the book</h2>
+                    {{ copyBook }}
                 </v-card-title>
 
                 <h3 class="mt-2 text-center text-bold">CHAPTERS</h3>
@@ -81,16 +83,36 @@
 </template>
 
 <script>
+import { httpServer } from "@/main"
+
 export default {
+    methods: {
+        getChapters(id_book) {
+            httpServer
+                .post("/get-chapters", { id_book: id_book })
+                .then((response) => {
+                    console.log(response.data)
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
+    },
     props: {
         showContentsDialog: {
             type: Boolean,
             default: false,
         },
+        book: {
+            type: Object,
+            required: true,
+        }
     },
     data() {
         return {
             isActive: false,
+            copyBook: { ...this.book },
+            chapters: [],
         }
     },
     watch: {
@@ -101,6 +123,7 @@ export default {
             }
         },
         isActive: function (val) { this.$emit('closeContents', val); },
+        book: function (bookValue) { this.copyBook = bookValue, this.getChapters(this.copyBook.id) }
     },
 }
 </script>
