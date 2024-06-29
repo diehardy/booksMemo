@@ -9,7 +9,7 @@
         <template v-slot:default="{ isActive }">
             <!-- CONTENT UNIT DIALOG -->
             <v-dialog v-model="contentUnitDialog" max-width="340">
-                <v-card title="Content Unit dialog">
+                <v-card :title="isContentExist">
                     <template v-slot:text>
                         <v-text-field label="Description" class="px-5"
                             v-model="contentUnit.name_contents"></v-text-field>
@@ -17,8 +17,6 @@
 
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        {{ contentUnit }}
-
                         <v-btn text="Close" variant="flat" @click="contentUnitDialog = false"
                             :color="contentUnit.name_contents ? 'grey-lighten-4' : ''"></v-btn>
                         <v-btn :text="contentUnit.id_contents ? 'Save' : 'Add'" variant="flat"
@@ -152,7 +150,6 @@ export default {
         },
         saveContentsUnit(contentUnit) {
             const { id_contents, name_contents, id_book, parent_id, type } = contentUnit
-            console.log(name_contents)
             httpServer
                 .post("/save-contents", { id_contents: id_contents, name_contents: name_contents, parent_id: parent_id, type: type, id_book: id_book })
                 .then(() => {
@@ -194,6 +191,9 @@ export default {
         },
         sectionHasSubsections() {
             return section => Object.keys(section.subsections).length !== 0;
+        },
+        isContentExist() {
+            return this.contentUnit.id_contents ? `Editing chosen ${this.contentUnit.type}` : `Adding new ${this.contentUnit.type}`
         }
     }
 }
