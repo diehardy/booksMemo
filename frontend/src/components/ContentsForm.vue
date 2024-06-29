@@ -17,8 +17,13 @@
 
                     <v-card-actions>
                         <v-spacer></v-spacer>
+                        {{ contentUnit }}
 
-                        <v-btn text="Close" variant="text" @click="dialog2 = false"></v-btn>
+                        <v-btn text="Close" variant="flat" @click="contentUnitDialog = false"
+                            :color="contentUnit.name_contents ? 'grey-lighten-4' : ''"></v-btn>
+                        <v-btn :text="contentUnit.id_contents ? 'Save' : 'Add'" variant="flat"
+                            :color="contentUnit.name_contents ? 'grey-darken-4' : ''"
+                            @click="saveContentsUnit(contentUnit)"></v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
@@ -37,7 +42,8 @@
                             <div class="d-flex ga-5 align-center">
                                 <h4>{{ chapter.chapter_name
                                     }}</h4>
-                                <v-icon icon="mdi-pencil" @click.stop="console.log('edit')"></v-icon>
+                                <v-icon icon="mdi-pencil"
+                                    @click.stop="setContentUnit({ id_contents: chapter.id_chapter, name_contents: chapter.chapter_name, id_book: this.copyBook.id, parent_id: null, type: 'chapter' })"></v-icon>
                                 <v-icon icon="mdi-delete" @click.stop="console.log('deleted')"></v-icon>
                             </div>
 
@@ -55,7 +61,8 @@
                                         <div class="d-flex ga-5 align-center">
                                             <h4>{{ section.section_name
                                                 }}</h4>
-                                            <v-icon icon="mdi-pencil" @click.stop="console.log('edit')"></v-icon>
+                                            <v-icon icon="mdi-pencil"
+                                                @click.stop="setContentUnit({ id_contents: section.id_section, name_contents: section.section_name, id_book: this.copyBook.id, parent_id: section.parent_id, type: 'section' })"></v-icon>
                                             <v-icon icon="mdi-delete" @click.stop="console.log('deleted')"></v-icon>
                                         </div>
                                     </v-expansion-panel-title>
@@ -67,22 +74,19 @@
                                             class="my-2 pa-2">
                                             <div class="d-flex ga-5 align-center flex-column flex-md-row">
                                                 <h4> {{ subsection.subsection_name }}</h4>
-                                                <v-icon icon="mdi-pencil" @click.stop="console.log('edit')"></v-icon>
+                                                <v-icon icon="mdi-pencil"
+                                                    @click.stop="setContentUnit({ id_contents: subsection.id_subsection, name_contents: subsection.subsection_name, id_book: this.copyBook.id, parent_id: section.id_section, type: 'subsection' })"></v-icon>
                                                 <v-icon icon="mdi-delete" @click.stop="console.log('deleted')"></v-icon>
                                             </div>
-
-
                                         </v-card>
 
                                         <v-btn class="mt-5" text="Add a subsection" variant="outlined"
-                                            @click="saveContentsUnit(null, 'subsection name', this.copyBook.id, section.id_section, 'subsection')"></v-btn>
+                                            @click="setContentUnit({ id_contents: null, name_contents: '', id_book: this.copyBook.id, parent_id: section.id_section, type: 'subsection' })"></v-btn>
                                     </v-expansion-panel-text>
                                 </v-expansion-panel>
                             </v-expansion-panels>
-
                             <v-btn class="mt-5" text="Add a section" variant="outlined"
-                                @click="saveContentsUnit(null, 'section name', this.copyBook.id, chapter.id_chapter, 'section')"></v-btn>
-
+                                @click="setContentUnit({ id_contents: null, name_contents: '', id_book: this.copyBook.id, parent_id: chapter.id_chapter, type: 'section' })"></v-btn>
                         </v-expansion-panel-text>
                     </v-expansion-panel>
                 </v-expansion-panels>
@@ -146,11 +150,21 @@ export default {
                     });
             }
         },
-        saveContentsUnit(id_contents = null, name_contents, id_book, parent_id, type) {
+        saveContentsUnit(contentUnit) {
+            const { id_contents, name_contents, id_book, parent_id, type } = contentUnit
+            console.log(name_contents)
             httpServer
                 .post("/save-contents", { id_contents: id_contents, name_contents: name_contents, parent_id: parent_id, type: type, id_book: id_book })
                 .then(() => {
+                    this.contentUnit = {
+                        id_contents: null,
+                        name_contents: null,
+                        id_book: null,
+                        parent_id: null,
+                        type: null,
+                    }
                     this.getChapters(id_book)
+                    this.contentUnitDialog = false
                 })
                 .catch((error) => {
                     console.log(error);
