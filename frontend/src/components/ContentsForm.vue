@@ -3,8 +3,26 @@
 
 
     <v-dialog max-width="1200" v-model="isActive">
-        <template v-slot:default="{ isActive }">
 
+
+
+        <template v-slot:default="{ isActive }">
+            <!-- CONTENT UNIT DIALOG -->
+            <v-dialog v-model="contentUnitDialog" max-width="340">
+                <v-card title="Content Unit dialog">
+                    <template v-slot:text>
+                        <v-text-field label="Description" class="px-5"
+                            v-model="contentUnit.name_contents"></v-text-field>
+                    </template>
+
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+
+                        <v-btn text="Close" variant="text" @click="dialog2 = false"></v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+            <!-- CARD ITSELF-->
             <v-card>
                 <v-card-title class="text-center text-bold mt-2" color="grey-darken-2">
                     <h2 class="text-uppercase new-line">Contents of the book</h2>
@@ -69,7 +87,7 @@
                     </v-expansion-panel>
                 </v-expansion-panels>
                 <div class="pa-5"><v-btn class="my-2" text="Add a chapter" variant="outlined"
-                        @click="saveContentsUnit(null, 'name contents', this.copyBook.id, null, 'chapter')">
+                        @click="setContentUnit({ id_contents: null, name_contents: '', id_book: this.copyBook.id, parent_id: null, type: 'chapter' })">
                     </v-btn></div>
                 <v-card-actions>
                     <v-spacer></v-spacer>
@@ -87,6 +105,31 @@
 import { httpServer } from "@/main"
 
 export default {
+    props: {
+        showContentsDialog: {
+            type: Boolean,
+            default: false,
+        },
+        book: {
+            type: Object,
+            required: true,
+        }
+    },
+    data() {
+        return {
+            isActive: false,
+            copyBook: { ...this.book },
+            chapters: {},
+            contentUnitDialog: false,
+            contentUnit: {
+                id_contents: null,
+                name_contents: null,
+                id_book: null,
+                parent_id: null,
+                type: null,
+            }
+        }
+    },
     methods: {
         getChapters(id_book) {
             this.chapters = {};
@@ -112,24 +155,12 @@ export default {
                 .catch((error) => {
                     console.log(error);
                 });
-        }
-    },
-    props: {
-        showContentsDialog: {
-            type: Boolean,
-            default: false,
         },
-        book: {
-            type: Object,
-            required: true,
+        setContentUnit(unitData) {
+            this.contentUnit = { ...unitData }
+            this.contentUnitDialog = true
         }
-    },
-    data() {
-        return {
-            isActive: false,
-            copyBook: { ...this.book },
-            chapters: {},
-        }
+
     },
     watch: {
         showContentsDialog: function (val) {
