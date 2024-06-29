@@ -57,20 +57,19 @@
                                         </v-card>
 
                                         <v-btn class="mt-5" text="Add a subsection" variant="outlined"
-                                            @click="console.log('added')"></v-btn>
+                                            @click="saveContentsUnit(null, 'subsection name', this.copyBook.id, section.id_section, 'subsection')"></v-btn>
                                     </v-expansion-panel-text>
                                 </v-expansion-panel>
                             </v-expansion-panels>
 
-
                             <v-btn class="mt-5" text="Add a section" variant="outlined"
-                                @click="console.log('added')"></v-btn>
+                                @click="saveContentsUnit(null, 'section name', this.copyBook.id, chapter.id_chapter, 'section')"></v-btn>
 
                         </v-expansion-panel-text>
                     </v-expansion-panel>
                 </v-expansion-panels>
                 <div class="pa-5"><v-btn class="my-2" text="Add a chapter" variant="outlined"
-                        @click="saveContentsUnit(this.copyBook.id, 'test2')">
+                        @click="saveContentsUnit(null, 'name contents', this.copyBook.id, null, 'chapter')">
                     </v-btn></div>
                 <v-card-actions>
                     <v-spacer></v-spacer>
@@ -104,9 +103,9 @@ export default {
                     });
             }
         },
-        saveContentsUnit(id_book, content_name, id_chapter = null) {
+        saveContentsUnit(id_contents = null, name_contents, id_book, parent_id, type) {
             httpServer
-                .post("/save-contents", { id_book: id_book, content_name: content_name, id_chapter: id_chapter })
+                .post("/save-contents", { id_contents: id_contents, name_contents: name_contents, parent_id: parent_id, type: type, id_book: id_book })
                 .then(() => {
                     this.getChapters(id_book)
                 })
