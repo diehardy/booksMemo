@@ -13,7 +13,7 @@
                         :color="copyBook.name ? 'grey-lighten-4' : ''"></v-btn>
                     <v-btn :text="copyBook.id ? 'Save' : 'Add'" variant="flat"
                         :color="copyBook.name ? 'grey-darken-4' : ''"
-                        @click=" saveBook(), isActive.value = false"></v-btn>
+                        @click="this.$emit('saveBook', this.copyBook), isActive.value = false"></v-btn>
                 </v-card-actions>
             </v-card>
         </template>
@@ -21,8 +21,6 @@
 </template>
 
 <script>
-import { httpServer } from "@/main"
-
 export default {
     props: {
         showAddingDialog: {
@@ -53,30 +51,14 @@ export default {
     },
 
     methods: {
-        saveBook() {
-            httpServer
-                .post("/save", {
-                    id: this.copyBook.id,
-                    book_name: this.copyBook.name,
-                    book_description: this.copyBook.description,
-                    is_audiobook: this.copyBook.is_audiobook,
-                    audiobook_source: this.copyBook.audiobook_source,
-                })
-                .then(() => {
-                    //console.log(response.data)
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-            this.resetAddingForm();
-            this.$emit('bookSaved');
-        },
         resetAddingForm() {
-            this.copyBook.id = null;
-            this.copyBook.name = null;
-            this.copyBook.description = null;
-            this.copyBook.is_audiobook = false;
-            this.copyBook.audiobook_source = null;
+            this.copyBook = {
+                id: null,
+                name: null,
+                description: null,
+                is_audiobook: false,
+                audiobook_source: null
+            }
         },
     }
 }

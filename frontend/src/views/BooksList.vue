@@ -7,8 +7,7 @@
         <v-btn class="ml-5" text="Add a book" variant="outlined" @click="showAudiobookDialogue = true"></v-btn>
       </v-col>
     </v-row>
-    <BookForm :showAddingDialog="showAudiobookDialogue" :book="book" @close="updateAddingDialog"
-      @bookSaved="getBooks" />
+    <BookForm :showAddingDialog="showAudiobookDialogue" :book="book" @close="updateAddingDialog" @saveBook="saveBook" />
     <ContentsForm :showContentsDialog="showContentsDialog" @closeContents="updateContentsDialog" :book="book" />
     <BookCards :list_of_books="list_of_books" @deleteBook="deleteBook" @editBook="getBookById"
       @dialogAdd="updateAddingDialog" @dialogContents="updateContentsDialog" />
@@ -75,6 +74,22 @@ export default {
         })
         .then((response) => {
           this.book = { ...response.data }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    saveBook(bookToSave) {
+      httpServer
+        .post("/save", {
+          id: bookToSave.id,
+          book_name: bookToSave.name,
+          book_description: bookToSave.description,
+          is_audiobook: bookToSave.is_audiobook,
+          audiobook_source: bookToSave.audiobook_source,
+        })
+        .then(() => {
+          this.getBooks()
         })
         .catch((error) => {
           console.log(error);
