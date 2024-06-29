@@ -34,7 +34,7 @@ class qualityController {
         try {
             let { id_book } = req.body;
 
-            Package.deleteBook(id_book)
+            await Package.deleteBook(id_book)
             return res.status(200).json({ message: 'Book has been deleted' })
         } catch (error) {
             console.log(error);

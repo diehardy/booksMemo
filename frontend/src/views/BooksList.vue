@@ -60,8 +60,9 @@ export default {
         .post("/delete", {
           id_book: id_book
         })
-        .then(() => {
-          this.getBooks();
+        .then((response) => {
+          if (response.status === 200) this.getBooks();
+          else console.log('smth went wrong...')
         })
         .catch((error) => {
           console.log(error);

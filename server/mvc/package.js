@@ -28,8 +28,42 @@ exports.editBook = async (id, book_name, book_description, is_audiobook, audiobo
         audiobook_source: audiobook_source
     }).where('id', id)
 
-exports.deleteBook = async (id_book) =>
-    knex("public.books").where('id', id_book).delete()
+// exports.deleteBook = async (id_book) =>
+//     knex("public.books").where('id', id_book).delete()
+
+exports.deleteBook = async (id_book) => {
+    try {
+        await knex.transaction(async (trx) => {
+            // Delete all subsections associated with the book
+            await trx('public.subsections')
+                .where('public.subsections.id_book', id_book)
+                .del();
+
+            // Delete all sections associated with the book
+            await trx('public.sections')
+                .where('public.sections.id_book', id_book)
+                .del();
+
+            // Delete all chapters associated with the book
+            await trx('public.chapters')
+                .where('public.chapters.id_book', id_book)
+                .del();
+
+            // Delete the book
+            await trx('public.books')
+                .where('public.books.id', id_book)
+                .del();
+
+            // Commit the transaction
+            await trx.commit();
+            console.log('Committed successfully');
+        });
+    } catch (error) {
+        console.error('Transaction rolled back due to error:', error);
+        throw error;
+    }
+};
+
 
 
 exports.getBookById = async (id_book) =>
