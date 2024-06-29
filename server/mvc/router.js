@@ -16,7 +16,9 @@ router.post("/delete", controller.deleteBook);
 
 // CONTENTS
 
-router.post("/get-chapters", controller.getChapters);
+router.post("/get-contents", controller.getContents);
+
+router.post("/save-contents", controller.saveContents);
 
 
 

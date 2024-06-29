@@ -60,7 +60,7 @@ class qualityController {
 
 
 
-    async getChapters(req, res) {
+    async getContents(req, res) {
         try {
             let { id_book } = req.body;
 
@@ -68,7 +68,7 @@ class qualityController {
 
             let contents = {};
             chapters.forEach((row) => {
-                console.log('row:', row)
+                //console.log('row:', row)
                 // checking chapters
                 if (!contents[`chapter_${row.id_chapter}`]) {
                     contents[`chapter_${row.id_chapter}`] = {
@@ -111,7 +111,34 @@ class qualityController {
 
 
 
+    async saveContents(req, res) {
+        try {
+            let { id_contents, name_contents, parent_id, type, id_book } = req.body;
 
+
+            switch (type) {
+                case 'chapter':
+                    if (id_contents) Package.editChapter(id_contents, name_contents)
+                    else Package.addChapter(id_book, name_contents)
+                    break;
+                case 'section':
+                    if (id_contents) Package.editSection(id_contents, name_contents)
+                    else Package.addSection(id_book, name_contents, parent_id)
+                    break;
+                case 'subsection':
+                    if (id_contents) Package.editSubsection(id_contents, name_contents)
+                    else Package.addSubsection(id_book, name_contents, parent_id)
+                    break;
+                default:
+                    return res.status(500).json({ message: "Undefined type of content" })
+            }
+
+            return res.status(200).json({ message: 'Content has been added' })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Content hasn't been added" })
+        }
+    }
 
 }
 

@@ -49,3 +49,43 @@ exports.getChapters = async (id_book) =>
         .orderBy('id_subsection')
 
 
+exports.addChapter = async (id_book, chapter_name) =>
+    knex("public.chapters").insert({
+        id_book: id_book, chapter_name: chapter_name
+    })
+
+exports.editChapter = async (id_chapter, chapter_name) =>
+    knex("public.chapters").update({
+        chapter_name: chapter_name
+    }).where('id_chapter', id_chapter)
+
+
+
+
+// exports.deleteChapter = async (id_chapter) =>
+//     knex
+//         .transaction(function (trx) {
+
+//         })
+
+
+exports.addSection = async (id_book, section_name, parent_chapter) =>
+    knex("public.sections").insert({
+        id_book: id_book, section_name: section_name, parent_chapter: parent_chapter
+    })
+
+exports.editSection = async (id_section, section_name) =>
+    knex("public.sections").update({
+        section_name: section_name
+    }).where('id_section', id_section)
+
+
+exports.addSubsection = async (id_book, subsection_name, parent_section) =>
+    knex("public.subsections").insert({
+        id_book: id_book, subsection_name: subsection_name, parent_section: parent_section
+    })
+
+exports.editSubsection = async (id_subsection, subsection_name) =>
+    knex("public.subsections").update({
+        subsection_name: subsection_name
+    }).where('id_subsection', id_subsection)

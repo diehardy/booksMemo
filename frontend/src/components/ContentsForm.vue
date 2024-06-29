@@ -70,7 +70,7 @@
                     </v-expansion-panel>
                 </v-expansion-panels>
                 <div class="pa-5"><v-btn class="my-2" text="Add a chapter" variant="outlined"
-                        @click="console.log('added')">
+                        @click="saveContentsUnit(this.copyBook.id, 'test2')">
                     </v-btn></div>
                 <v-card-actions>
                     <v-spacer></v-spacer>
@@ -95,18 +95,24 @@ export default {
             // i'm check  if dialogue of contents is active
             if (this.isActive) {
                 httpServer
-                    .post("/get-chapters", { id_book: id_book })
+                    .post("/get-contents", { id_book: id_book })
                     .then((response) => {
                         this.chapters = response.data
-                        console.log('chapters', this.chapters)
                     })
                     .catch((error) => {
                         console.log(error);
                     });
             }
         },
-        isObjectEmpty(objToCheck) {
-            return objToCheck && Object.keys(objToCheck).length !== 0;
+        saveContentsUnit(id_book, content_name, id_chapter = null) {
+            httpServer
+                .post("/save-contents", { id_book: id_book, content_name: content_name, id_chapter: id_chapter })
+                .then(() => {
+                    this.getChapters(id_book)
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
         }
     },
     props: {
