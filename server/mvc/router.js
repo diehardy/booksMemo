@@ -21,6 +21,7 @@ router.post("/get-contents", controller.getContents);
 router.post("/save-contents", controller.saveContents);
 
 
+router.post("/delete-contents", controller.deleteContents);
 
 
 module.exports = router;

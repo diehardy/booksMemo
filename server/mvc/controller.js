@@ -42,6 +42,33 @@ class qualityController {
         }
     }
 
+
+    async deleteContents(req, res) {
+        try {
+            let { id_contents, type } = req.body;
+
+            switch (type) {
+                case 'subsection':
+                    await Package.deleteSubsection(id_contents)
+                    break;
+                case 'section':
+                    await Package.deleteSection(id_contents)
+                    break;
+                case 'chapter': await Package.deleteChapter(id_contents)
+                    break;
+                default:
+                    return res.status(500).json({ message: "Undefined type of content" })
+            }
+
+
+            return res.status(200).json({ message: 'Book has been deleted' })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Book hasn't been added" })
+        }
+    }
+
+
     async getBookById(req, res) {
         try {
             let { id_book } = req.body;

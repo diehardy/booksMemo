@@ -28,8 +28,77 @@ exports.editBook = async (id, book_name, book_description, is_audiobook, audiobo
         audiobook_source: audiobook_source
     }).where('id', id)
 
-// exports.deleteBook = async (id_book) =>
-//     knex("public.books").where('id', id_book).delete()
+exports.deleteSubsection = async (id_subsection) =>
+    knex("public.subsections").where('id_subsection', id_subsection).delete()
+
+exports.deleteSection = async (id_section) => {
+    try {
+        await knex.transaction(async (trx) => {
+
+            // Delete all subsections associated with the section
+            await trx('public.subsections')
+                .where('public.subsections.parent_section', id_section)
+                .del();
+
+            // delete the section 
+            await trx('public.sections')
+                .where('public.sections.id_section', id_section)
+                .del();
+
+            // Commit the transaction
+            await trx.commit();
+            console.log('Committed successfully');
+        });
+    } catch (error) {
+        console.error('Transaction rolled back due to error:', error);
+        throw error;
+    }
+};
+
+
+
+exports.deleteChapter = async (id_chapter) => {
+    try {
+        await knex.transaction(async (trx) => {
+
+            const sections = await trx('public.sections')
+                .where('public.sections.parent_chapter', id_chapter)
+                .select('public.sections.id_section')
+
+            const sectionIds = sections.map(section => section.id_section)
+
+
+
+            // Delete all subsections associated with the section
+            await trx('public.subsections')
+                .whereIn('public.subsections.parent_section', sectionIds)
+                .del();
+
+            // Delete all chapters associated with the chapter
+            await trx('public.sections')
+                .where('public.sections.parent_chapter', id_chapter)
+                .del();
+
+            // Delete the chapter
+            await trx('public.chapters')
+                .where('public.chapters.id_chapter', id_chapter)
+                .del();
+
+            // Commit the transaction
+            await trx.commit();
+            console.log('Committed successfully');
+        });
+    } catch (error) {
+        console.error('Transaction rolled back due to error:', error);
+        throw error;
+    }
+};
+
+
+
+
+
+
 
 exports.deleteBook = async (id_book) => {
     try {
@@ -96,11 +165,6 @@ exports.editChapter = async (id_chapter, chapter_name) =>
 
 
 
-// exports.deleteChapter = async (id_chapter) =>
-//     knex
-//         .transaction(function (trx) {
-
-//         })
 
 
 exports.addSection = async (id_book, section_name, parent_chapter) =>

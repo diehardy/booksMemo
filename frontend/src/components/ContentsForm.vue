@@ -42,7 +42,8 @@
                                     }}</h4>
                                 <v-icon icon="mdi-pencil"
                                     @click.stop="setContentUnit({ id_contents: chapter.id_chapter, name_contents: chapter.chapter_name, id_book: this.copyBook.id, parent_id: null, type: 'chapter' })"></v-icon>
-                                <v-icon icon="mdi-delete" @click.stop="console.log('deleted')"></v-icon>
+                                <v-icon icon="mdi-delete"
+                                    @click.stop="deleteContents(chapter.id_chapter, 'chapter', this.copyBook.id)"></v-icon>
                             </div>
 
                         </v-expansion-panel-title>
@@ -61,7 +62,8 @@
                                                 }}</h4>
                                             <v-icon icon="mdi-pencil"
                                                 @click.stop="setContentUnit({ id_contents: section.id_section, name_contents: section.section_name, id_book: this.copyBook.id, parent_id: section.parent_id, type: 'section' })"></v-icon>
-                                            <v-icon icon="mdi-delete" @click.stop="console.log('deleted')"></v-icon>
+                                            <v-icon icon="mdi-delete"
+                                                @click.stop="deleteContents(section.id_section, 'section', this.copyBook.id)"></v-icon>
                                         </div>
                                     </v-expansion-panel-title>
 
@@ -74,7 +76,8 @@
                                                 <h4> {{ subsection.subsection_name }}</h4>
                                                 <v-icon icon="mdi-pencil"
                                                     @click.stop="setContentUnit({ id_contents: subsection.id_subsection, name_contents: subsection.subsection_name, id_book: this.copyBook.id, parent_id: section.id_section, type: 'subsection' })"></v-icon>
-                                                <v-icon icon="mdi-delete" @click.stop="console.log('deleted')"></v-icon>
+                                                <v-icon icon="mdi-delete"
+                                                    @click.stop="deleteContents(subsection.id_subsection, 'subsection', this.copyBook.id)"></v-icon>
                                             </div>
                                         </v-card>
 
@@ -170,7 +173,17 @@ export default {
         setContentUnit(unitData) {
             this.contentUnit = { ...unitData }
             this.contentUnitDialog = true
-        }
+        },
+        deleteContents(id_contents, type, id_book) {
+            httpServer
+                .post("/delete-contents", { id_contents: id_contents, type: type })
+                .then(() => {
+                    this.getChapters(id_book)
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
 
     },
     watch: {
