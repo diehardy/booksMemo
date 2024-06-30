@@ -13,8 +13,11 @@ console.log(process.env.DB_HOST)
 // BOOKS
 
 
-exports.getBooks = async () =>
-    knex("public.books").select().orderBy('id', 'asc')
+exports.getBooks = async (chosen_page, qnt_per_page, limit) =>
+    knex("public.books").select().orderBy('id', 'asc').offset((chosen_page - 1) * qnt_per_page).limit(limit)
+
+exports.countPages = async () =>
+    knex("public.books").select().count('id')
 
 exports.addBook = async (book_name, book_description, is_audiobook, audiobook_source) =>
     knex("public.books").insert({

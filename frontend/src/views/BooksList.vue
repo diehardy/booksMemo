@@ -13,7 +13,8 @@
       @dialogAdd="updateAddingDialog" @dialogContents="updateContentsDialog" />
 
 
-    <v-pagination color="grey-darken-2" :length="4"></v-pagination>
+    <v-pagination color="grey-darken-2" :length="total_pages" v-model="chosen_page"
+      v-show="list_of_books.length > 0"></v-pagination>
 
 
   </div>
@@ -39,16 +40,19 @@ export default {
         audiobook_source: null,
       },
       list_of_books: [],
+      chosen_page: 1,
+      total_pages: null,
     }
   },
   mounted() {
     this.getBooks();
   },
   methods: {
-    getBooks() {
+    getBooks(chosen_page) {
       httpServer
-        .get("/get")
+        .post("/get", { chosen_page: chosen_page })
         .then((response) => {
+          this.total_pages = response.data.pages
           this.list_of_books = response.data.all_books
         })
         .catch((error) => {
@@ -90,7 +94,8 @@ export default {
           audiobook_source: bookToSave.audiobook_source,
         })
         .then(() => {
-          this.getBooks()
+          this.chosen_page = 1
+          this.getBooks(this.chosen_page)
         })
         .catch((error) => {
           console.log(error);
@@ -98,6 +103,11 @@ export default {
     },
     updateAddingDialog(currentDialogueStatus) { this.showAudiobookDialogue = currentDialogueStatus },
     updateContentsDialog(currentDialogueStatus) { this.showContentsDialog = currentDialogueStatus },
+  },
+  watch: {
+    chosen_page: function (newPage) {
+      this.getBooks(newPage)
+    },
   },
   components: {
     BookForm,
