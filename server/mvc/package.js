@@ -14,7 +14,7 @@ console.log(process.env.DB_HOST)
 
 
 exports.getBooks = async (chosen_page, qnt_per_page, limit) =>
-    knex("public.books").select().orderBy('id', 'asc').offset((chosen_page - 1) * qnt_per_page).limit(limit)
+    knex("public.books").select().orderBy('id', 'asc').offset((chosen_page - 1) * qnt_per_page).limit(Number(limit))
 
 exports.countPages = async () =>
     knex("public.books").select().count('id')

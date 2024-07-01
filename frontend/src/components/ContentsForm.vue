@@ -147,7 +147,9 @@ export default {
                         this.chapters = response.data
                     })
                     .catch((error) => {
-                        console.log(error);
+                        if (error) {
+                            console.log('Contents for this book are not found')
+                        }
                     });
             }
         },

@@ -132,13 +132,12 @@ class qualityController {
 
 
             })
-
             if (chapters[0]) return res.status(200).json(contents)
-            else return res.status(404).json({ message: "No chapters" })
+            else return res.status(404).json({ message: "No contents" })
 
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ message: "Book hasn't been added" })
+            return res.status(500).json({ message: "Error happened" })
         }
     }
 
