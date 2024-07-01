@@ -17,7 +17,7 @@
 
             <v-row class="pa-5 ga-5">
                 <v-btn text="Notes" variant="outlined" prepend-icon="mdi-pencil"
-                    @click="console.log('go to notes')"></v-btn>
+                    @click="this.$router.push({ path: `/book/${book.id}/notes` })"></v-btn>
                 <v-btn text="Contents" variant="outlined" prepend-icon="mdi-table-of-contents"
                     @click="this.$emit('editBook', book.id), this.$emit('dialogContents', true)"></v-btn>
                 <v-btn text="Edit" v-bind="activatorProps" variant="outlined" prepend-icon="mdi-file-edit"
@@ -49,6 +49,7 @@ export default {
     },
     methods: {
         getBookById(id_book) {
+
             httpServer
                 .post("/get-by-id", {
                     id_book: id_book
@@ -60,6 +61,8 @@ export default {
                     console.log(error);
                 });
         },
-    }
+    },
+
+
 }
 </script>
