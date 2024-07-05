@@ -97,7 +97,7 @@ class qualityController {
         try {
             let { id_book } = req.body;
 
-            const chapters = await Package.getChapters(id_book)
+            const chapters = await Package.getContents(id_book)
 
             let contents = {};
             chapters.forEach((row) => {
@@ -171,6 +171,43 @@ class qualityController {
             return res.status(500).json({ message: "Content hasn't been added" })
         }
     }
+
+
+
+    // get all chapters, sections, subsections by book id or chapter/section id
+    async getContentsById(req, res) {
+        try {
+            let { id_book, id_structure, type } = req.body;
+            let contents = '';
+
+            switch (type) {
+                case 'chapter':
+                    contents = await Package.getChapters(id_book)
+                    break;
+                case 'section':
+                    contents = await Package.getSections(id_structure)
+                    break;
+                case 'subsection':
+                    contents = await Package.getSubsections(id_structure)
+                    break;
+                default:
+                    return res.status(500).json({ message: "Undefined type of content" })
+            }
+
+            return res.status(200).json({ contents })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Contents is not found" })
+        }
+    }
+
+
+
+
+
+
+
+
 
 }
 

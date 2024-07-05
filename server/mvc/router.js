@@ -19,6 +19,7 @@ router.post("/delete", controller.deleteBook);
 router.post("/get-contents", controller.getContents);
 
 router.post("/save-contents", controller.saveContents);
+router.post("/get-contents-by-id", controller.getContentsById);
 
 
 router.post("/delete-contents", controller.deleteContents);

@@ -144,7 +144,7 @@ exports.getBookById = async (id_book) =>
 
 // CONTENTS 
 
-exports.getChapters = async (id_book) =>
+exports.getContents = async (id_book) =>
     knex("public.chapters")
         .select('public.chapters.id_book', 'public.chapters.chapter_name', 'public.chapters.id_chapter', 'public.sections.id_section', 'public.sections.section_name', 'public.sections.parent_chapter', 'public.subsections.id_subsection', 'public.subsections.parent_section', 'public.subsections.subsection_name')
         .leftJoin('public.sections', 'public.chapters.id_chapter', '=', 'public.sections.parent_chapter')
@@ -152,6 +152,25 @@ exports.getChapters = async (id_book) =>
         .where('public.chapters.id_book', id_book)
         .orderBy('id_chapter')
         .orderBy('id_section')
+        .orderBy('id_subsection')
+
+
+exports.getChapters = async (id_book) =>
+    knex("public.chapters")
+        .select()
+        .where('public.chapters.id_book', id_book)
+        .orderBy('id_chapter')
+
+exports.getSections = async (id_chapter) =>
+    knex("public.sections")
+        .select()
+        .where('public.sections.parent_chapter', id_chapter)
+        .orderBy('id_section')
+
+exports.getSubsections = async (id_section) =>
+    knex("public.subsections")
+        .select()
+        .where('public.subsections.parent_section', id_section)
         .orderBy('id_subsection')
 
 
