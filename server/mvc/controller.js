@@ -225,9 +225,9 @@ class qualityController {
 
 
     async getNotes(req, res) {
-        const { parent_structure, parent_type } = req.body
+        const { parent_structure, parent_type, contentsType } = req.body
         try {
-            const all_notes = await Package.getNotes(parent_structure, parent_type);
+            const all_notes = await Package.getNotes(parent_structure, parent_type, contentsType);
             return res.status(200).json({ all_notes })
         } catch (error) {
             console.log(error);
@@ -235,7 +235,17 @@ class qualityController {
         }
     }
 
+    async deleteNote(req, res) {
+        try {
+            let { id_note } = req.body;
 
+            await Package.deleteNote(id_note)
+            return res.status(200).json({ message: 'Note has been deleted' })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Note hasn't been added" })
+        }
+    }
 
 }
 

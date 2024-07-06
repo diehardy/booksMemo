@@ -227,9 +227,13 @@ exports.editNote = async (id_note, note_name, note_description, page, timecode, 
     }).where('id_note', id_note)
 
 
-exports.getNotes = async (id_structure, type_structure) =>
+exports.getNotes = async (id_structure, type_structure, contentsType) =>
     knex("public.notes")
         .select()
         .where('public.notes.parent_structure', id_structure)
         .andWhere('public.notes.parent_type', type_structure)
+        .andWhere('public.notes.note_type', contentsType)
         .orderBy('page')
+
+exports.deleteNote = async (id_note) =>
+    knex("public.notes").where('id_note', id_note).delete()

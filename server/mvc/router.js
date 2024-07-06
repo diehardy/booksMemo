@@ -30,6 +30,7 @@ router.post("/get-contents-by-id", controller.getContentsById);
 router.post("/save-note", controller.saveNote);
 
 router.post("/get-notes", controller.getNotes);
+router.post("/delete-note", controller.deleteNote);
 
 
 

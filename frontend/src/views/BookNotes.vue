@@ -87,7 +87,7 @@
                 <v-row class="pa-5 ga-5 align-center">
                     <v-btn text="Edit" v-bind="activatorProps" variant="outlined" prepend-icon="mdi-file-edit"></v-btn>
                     <v-btn text="Delete" variant="outlined" prepend-icon="mdi-delete" class="mr-5"
-                        @click="this.$emit('deleteBook', book.id)"></v-btn>
+                        @click="deleteNote(note.id_note)"></v-btn>
                     <v-row class="justify-end">
                         <v-chip prepend-icon="mdi-book" class="mx-2 mt-2" color="primary" v-if="note.page">
                             Page: {{ note.page }}
@@ -221,6 +221,7 @@ export default {
                 .post("/save-note", { id_note: noteStructure.id, note_name: noteStructure.note_name, note_description: noteStructure.note_description, page: noteStructure.page, timecode, id_book: this.id_book, parent_structure, parent_type, note_type: contentsType })
                 .then(() => {
                     this.resetDataNote()
+                    this.getNotes(this.chosenContents, this.contentsType)
                 })
                 .catch((error) => {
                     if (error) {
@@ -242,15 +243,14 @@ export default {
                 hours: null,
             }
         },
-        getNotes(chosenContents) {
+        getNotes(chosenContents, contentsType) {
             let parent_type = ''
             let parent_structure = null
             if (chosenContents.subsection) { parent_type = 'subsection'; parent_structure = chosenContents.subsection }
             else if (chosenContents.section) { parent_type = 'section'; parent_structure = chosenContents.section }
             else if (chosenContents.chapter) { parent_type = 'chapter'; parent_structure = chosenContents.chapter }
-            console.log(parent_structure, parent_type)
             httpServer
-                .post("/get-notes", { parent_structure, parent_type })
+                .post("/get-notes", { parent_structure, parent_type, contentsType })
                 .then((response) => {
                     this.notes = response.data.all_notes
                     console.log(this.notes)
@@ -261,16 +261,22 @@ export default {
                     }
                 });
         },
+        deleteNote(id_note) {
+            httpServer
+                .post("/delete-note", { id_note })
+                .then(() => { this.getNotes(this.chosenContents, this.contentsType) })
+                .catch((error) => {
+                    if (error) {
+                        console.log('Cannot be deleted because: ', error)
+                    }
+                });
+        },
         formatTimecode(timecode) {
             let hours = timecode >= 3600 ? Math.floor(timecode / 3600) : 0
-            console.log('step1', timecode)
             timecode = timecode - (hours * 3600)
             let minutes = timecode >= 60 ? Math.floor(timecode / 60) : 0
-            console.log('step2', timecode)
             timecode = timecode - (minutes * 60)
             let seconds = timecode
-            console.log('step3', timecode)
-
             return `Timecode: ${hours}h ${minutes}m ${seconds}s`
         }
     },
@@ -279,13 +285,16 @@ export default {
         this.getBookById()
     },
     watch: {
-        'chosenContents.chapter': function (chapterId) { if (chapterId) this.getContentsByStructure(null, chapterId, 'section'); this.getNotes(this.chosenContents) },
-        'chosenContents.section': function (sectionId) { if (sectionId) this.getContentsByStructure(null, sectionId, 'subsection'); this.getNotes(this.chosenContents) },
-        'chosenContents.subsection': function (subsectionId) { if (subsectionId) this.getNotes(this.chosenContents) },
+        'chosenContents.chapter': function (chapterId) { if (chapterId) this.getContentsByStructure(null, chapterId, 'section'); this.getNotes(this.chosenContents, this.contentsType) },
+        'chosenContents.section': function (sectionId) { if (sectionId) this.getContentsByStructure(null, sectionId, 'subsection'); this.getNotes(this.chosenContents, this.contentsType) },
+        'chosenContents.subsection': function (subsectionId) { if (subsectionId) this.getNotes(this.chosenContents, this.contentsType) },
         showAddingDialog: function (val) {
             if (val) {
                 this.resetDataNote()
             }
+        },
+        contentsType: function (newType) {
+            this.getNotes(this.chosenContents, newType)
         },
     },
 
