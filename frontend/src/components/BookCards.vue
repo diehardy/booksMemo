@@ -14,7 +14,6 @@
                     </template>
                 </v-tooltip>
             </template>
-
             <v-row class="pa-5 ga-5">
                 <v-btn text="Notes" variant="outlined" prepend-icon="mdi-pencil"
                     @click="this.$router.push({ path: `/book/${book.id}/notes` })"></v-btn>
