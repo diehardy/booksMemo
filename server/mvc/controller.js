@@ -173,6 +173,7 @@ class qualityController {
     }
 
 
+    // NOTES 
 
     // get all chapters, sections, subsections by book id or chapter/section id
     async getContentsById(req, res) {
@@ -202,7 +203,19 @@ class qualityController {
     }
 
 
+    async saveNote(req, res) {
+        try {
+            let { id_note, note_name, note_description, page, timecode, id_book, parent_structure, parent_type } = req.body;
 
+            if (id_note) Package.editNote(id_note, note_name, note_description, page, timecode, id_book, parent_structure, parent_type)
+            else Package.addNote(note_name, note_description, page, timecode, id_book, parent_structure, parent_type)
+
+            return res.status(200).json({ message: 'Note has been added' })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Note hasn't been added" })
+        }
+    }
 
 
 

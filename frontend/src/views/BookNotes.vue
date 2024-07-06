@@ -5,18 +5,22 @@
         <v-dialog max-width="500" v-model="showAddingDialog">
             <v-card title="Add a new note">
 
-                <v-text-field label="Phrase" class="px-5"></v-text-field>
-                <v-text-field label="Meaning" class="px-5"></v-text-field>
-                <v-text-field label="Page" type="number" min="0" max="3000" class="px-5"></v-text-field>
-                <h4 class="ml-2">Timecode</h4>
-                <v-text-field label="Seconds" type="number" min="0" max="3000" class="px-5"></v-text-field>
-                <v-text-field label="Minutes" type="number" min="0" max="3000" class="px-5"></v-text-field>
-                <v-text-field label="Hours" type="number" min="0" max="300" class="px-5"></v-text-field>
+                <v-text-field label="Phrase" class="px-5" v-model="noteContents.note_name"></v-text-field>
+                <v-text-field label="Meaning" class="px-5" v-model="noteContents.note_description"></v-text-field>
+                <v-text-field label="Page" type="number" min="0" max="3000" class="px-5"
+                    v-model="noteContents.page"></v-text-field>
+                <h4 class="ml-2">{{ book.is_audiobook ? 'Timecode'
+                    : 'To add timecodes you have to set a link to an audiobook' }}</h4>
+                <div v-if="book.is_audiobook">
+                    <v-text-field label="Seconds" type="number" min="0" max="59" class="px-5"></v-text-field>
+                    <v-text-field label="Minutes" type="number" min="0" max="59" class="px-5"></v-text-field>
+                    <v-text-field label="Hours" type="number" min="0" max="300" class="px-5"></v-text-field>
+                </div>
 
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn text="Close" variant="flat">oops</v-btn>
-                    <v-btn variant="flat" @click="showAddingDialog = false">close</v-btn>
+                    <v-btn text="Close" variant="flat" @click="showAddingDialog = false">Close</v-btn>
+                    <v-btn variant="flat" @click="saveNote(null)">Save</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -61,7 +65,7 @@
             </v-card-actions>
             <!-- ALL NOTES -->
         </v-card>
-        <v-row class="d-flex justify-center flex-wrap ga-5  ma-5">
+        <v-row class="d-flex justify-center flex-wrap ga-5  ma-5 ">
             <v-card color="grey-darken-2" v-for="(note, index) in notes" :key="index" cols="2" class="mx-auto text-left"
                 prepend-icon="mdi-book-open-blank-variant" width="1200" variant="outlined">
                 <template v-slot:title>
@@ -76,10 +80,22 @@
                         </template>
                     </v-tooltip>
                 </template>
-                <v-row class="pa-5 ga-5">
+                <v-row class="pa-5 ga-5 align-center">
                     <v-btn text="Edit" v-bind="activatorProps" variant="outlined" prepend-icon="mdi-file-edit"></v-btn>
                     <v-btn text="Delete" variant="outlined" prepend-icon="mdi-delete" class="mr-5"
                         @click="this.$emit('deleteBook', book.id)"></v-btn>
+                    <v-row class="justify-end">
+                        <v-chip prepend-icon="mdi-book" class="mx-2 mt-2" color="primary">
+                            Page: 22
+                        </v-chip>
+                        <a :href="book.audiobook_source" target="_blank">
+                            <v-chip :model-value="true" class="ma-2" color="green" prepend-icon="mdi-clock-outline">
+                                Timecode: 1h 22m 34s
+                            </v-chip>
+                        </a>
+
+                    </v-row>
+
                 </v-row>
                 <v-card-text class="bg-surface-light pt-4">
                     {{ note.meaning }}
@@ -113,6 +129,18 @@ export default {
             }],
             book: {},
             showAddingDialog: false,
+            noteContents: {
+                id_note: null,
+                note_name: '',
+                note_description: '',
+                page: null,
+                timecode: null,
+            },
+            timecode: {
+                seconds: null,
+                minutes: null,
+                hours: null,
+            }
         }
     },
     methods: {
@@ -175,7 +203,30 @@ export default {
                 default:
                     console.log('type not found')
             }
-        }
+        },
+
+        // notes
+        saveNote(id_note, note_name, note_description, page, timecode, id_book) {
+
+            let parent_structure = null
+            let parent_type = null
+            if (this.chosenContents.subsection) { parent_structure = this.chosenContents.subsection; parent_type = 'subsection' }
+            else if (this.chosenContents.section) { parent_structure = this.chosenContents.section; parent_type = 'section' }
+            else if (this.chosenContents.chapter) { parent_structure = this.chosenContents.chapter; parent_type = 'chapter' }
+
+
+            httpServer
+                .post("/save-note", { id_note, note_name, note_description, page, timecode, id_book, parent_structure, parent_type })
+                .then((response) => {
+                    console.log(response.data)
+                })
+                .catch((error) => {
+                    if (error) {
+                        console.log('Contents for this book are not found', error)
+                    }
+                });
+            this.showAddingDialog = false
+        },
     },
     mounted() {
         this.getContentsByStructure(this.$route.params.id, null, 'chapter')

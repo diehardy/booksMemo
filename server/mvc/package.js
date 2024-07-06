@@ -155,24 +155,6 @@ exports.getContents = async (id_book) =>
         .orderBy('id_subsection')
 
 
-exports.getChapters = async (id_book) =>
-    knex("public.chapters")
-        .select()
-        .where('public.chapters.id_book', id_book)
-        .orderBy('id_chapter')
-
-exports.getSections = async (id_chapter) =>
-    knex("public.sections")
-        .select()
-        .where('public.sections.parent_chapter', id_chapter)
-        .orderBy('id_section')
-
-exports.getSubsections = async (id_section) =>
-    knex("public.subsections")
-        .select()
-        .where('public.subsections.parent_section', id_section)
-        .orderBy('id_subsection')
-
 
 exports.addChapter = async (id_book, chapter_name) =>
     knex("public.chapters").insert({
@@ -183,10 +165,6 @@ exports.editChapter = async (id_chapter, chapter_name) =>
     knex("public.chapters").update({
         chapter_name: chapter_name
     }).where('id_chapter', id_chapter)
-
-
-
-
 
 
 exports.addSection = async (id_book, section_name, parent_chapter) =>
@@ -209,3 +187,39 @@ exports.editSubsection = async (id_subsection, subsection_name) =>
     knex("public.subsections").update({
         subsection_name: subsection_name
     }).where('id_subsection', id_subsection)
+
+
+// NOTES 
+
+exports.getChapters = async (id_book) =>
+    knex("public.chapters")
+        .select()
+        .where('public.chapters.id_book', id_book)
+        .orderBy('id_chapter')
+
+exports.getSections = async (id_chapter) =>
+    knex("public.sections")
+        .select()
+        .where('public.sections.parent_chapter', id_chapter)
+        .orderBy('id_section')
+
+exports.getSubsections = async (id_section) =>
+    knex("public.subsections")
+        .select()
+        .where('public.subsections.parent_section', id_section)
+        .orderBy('id_subsection')
+
+
+
+exports.addNote = async (note_name, note_description, page, timecode, id_book, parent_structure, parent_type) =>
+    knex("public.notes").insert({
+        name: note_name, description: note_description, page: page,
+        timecode: timecode, id_book: id_book, parent_structure: parent_structure, parent_structure: parent_type
+    })
+
+
+exports.editNote = async (id_note, note_name, note_description, page, timecode, id_book, parent_structure, parent_type) =>
+    knex("public.notes").update({
+        note_name: note_name, note_description: note_description, page: page,
+        timecode: timecode, id_book: id_book, parent_structure: parent_structure, parent_type: parent_type
+    }).where('id_note', id_note)
