@@ -8,7 +8,8 @@
       </v-col>
     </v-row>
     <BookForm :showAddingDialog="showAudiobookDialogue" :book="book" @close="updateAddingDialog" @saveBook="saveBook" />
-    <ContentsForm :showContentsDialog="showContentsDialog" @closeContents="updateContentsDialog" :book="book" />
+    <ContentsForm :showContentsDialog="showContentsDialog" @closeContents="updateContentsDialog" :book="book"
+      @updatedUnit="getBooks(chosen_page)" />
     <BookCards :list_of_books="list_of_books" @deleteBook="deleteBook" @editBook="getBookById"
       @dialogAdd="updateAddingDialog" @dialogContents="updateContentsDialog" />
 

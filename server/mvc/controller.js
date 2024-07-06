@@ -13,10 +13,16 @@ class qualityController {
         const limit = 5;
         try {
             const all_books = await Package.getBooks(chosen_page, qnt_per_page, limit);
+
+            for (let i = 0; i < all_books.length; i++) {
+                console.log(all_books[i].id)
+                let result = await Package.checkChapter(all_books[i].id)
+                console.log(result)
+                if (result[0]) all_books[i].hasChapter = true
+                else all_books[i].hasChapter = false
+            }
             let total_pages = await Package.countPages();
-            console.log(total_pages[0].count)
             total_pages[0].count = Math.ceil(total_pages[0].count / qnt_per_page)
-            console.log('pages:', total_pages);
             return res.status(200).json({ all_books, pages: total_pages[0].count })
         } catch (error) {
             console.log(error);

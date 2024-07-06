@@ -167,6 +167,7 @@ export default {
                     }
                     this.getChapters(id_book)
                     this.contentUnitDialog = false
+                    this.$emit('updatedUnit');
                 })
                 .catch((error) => {
                     console.log(error);
@@ -181,6 +182,7 @@ export default {
                 .post("/delete-contents", { id_contents: id_contents, type: type })
                 .then(() => {
                     this.getChapters(id_book)
+                    this.$emit('updatedUnit');
                 })
                 .catch((error) => {
                     console.log(error);
