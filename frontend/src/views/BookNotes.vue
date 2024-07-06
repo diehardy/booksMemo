@@ -23,7 +23,7 @@
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn text="Close" variant="flat" @click="showAddingDialog = false">Close</v-btn>
-                    <v-btn variant="flat"
+                    <v-btn variant="flat" color="grey-darken-4"
                         @click="saveNote(noteContents, timecode, chosenContents, contentsType)">Save</v-btn>
                 </v-card-actions>
             </v-card>
@@ -73,11 +73,11 @@
             <v-card color="grey-darken-2" v-for="(note, index) in notes" :key="index" cols="2" class="mx-auto text-left"
                 prepend-icon="mdi-book-open-blank-variant" width="1200" variant="outlined">
                 <template v-slot:title>
-                    <span class="font-weight-black new-line">{{ note.phrase }}</span>
+                    <span class="font-weight-black new-line">{{ note.note_name }}</span>
                     <v-tooltip
                         :text="book.is_audiobook ? `Audiobook is available at ${book.audiobook_source}` : 'Audiobook isn\'t available'">
                         <template v-slot:activator="{ props }">
-                            <a :href="book.audiobook_source" target="_blank">
+                            <a :href="book.audiobook_source + '&t=' + note.timecode" target="_blank">
                                 <v-icon v-bind="props" icon="mdi-headphones" placeholder="audiobook" class="ml-5"
                                     :color="book.is_audiobook ? 'green' : 'red'"></v-icon>
                             </a>
@@ -89,12 +89,12 @@
                     <v-btn text="Delete" variant="outlined" prepend-icon="mdi-delete" class="mr-5"
                         @click="this.$emit('deleteBook', book.id)"></v-btn>
                     <v-row class="justify-end">
-                        <v-chip prepend-icon="mdi-book" class="mx-2 mt-2" color="primary">
-                            Page: 22
+                        <v-chip prepend-icon="mdi-book" class="mx-2 mt-2" color="primary" v-if="note.page">
+                            Page: {{ note.page }}
                         </v-chip>
-                        <a :href="book.audiobook_source" target="_blank">
+                        <a :href="book.audiobook_source + '&t=' + note.timecode" target="_blank" v-if="note.timecode">
                             <v-chip :model-value="true" class="ma-2" color="green" prepend-icon="mdi-clock-outline">
-                                Timecode: 1h 22m 34s
+                                {{ formatTimecode(note.timecode) }}
                             </v-chip>
                         </a>
 
@@ -241,6 +241,37 @@ export default {
                 minutes: null,
                 hours: null,
             }
+        },
+        getNotes(chosenContents) {
+            let parent_type = ''
+            let parent_structure = null
+            if (chosenContents.subsection) { parent_type = 'subsection'; parent_structure = chosenContents.subsection }
+            else if (chosenContents.section) { parent_type = 'section'; parent_structure = chosenContents.section }
+            else if (chosenContents.chapter) { parent_type = 'chapter'; parent_structure = chosenContents.chapter }
+            console.log(parent_structure, parent_type)
+            httpServer
+                .post("/get-notes", { parent_structure, parent_type })
+                .then((response) => {
+                    this.notes = response.data.all_notes
+                    console.log(this.notes)
+                })
+                .catch((error) => {
+                    if (error) {
+                        console.log('Notes for this book are not found', error)
+                    }
+                });
+        },
+        formatTimecode(timecode) {
+            let hours = timecode >= 3600 ? Math.floor(timecode / 3600) : 0
+            console.log('step1', timecode)
+            timecode = timecode - (hours * 3600)
+            let minutes = timecode >= 60 ? Math.floor(timecode / 60) : 0
+            console.log('step2', timecode)
+            timecode = timecode - (minutes * 60)
+            let seconds = timecode
+            console.log('step3', timecode)
+
+            return `Timecode: ${hours}h ${minutes}m ${seconds}s`
         }
     },
     mounted() {
@@ -248,13 +279,15 @@ export default {
         this.getBookById()
     },
     watch: {
-        'chosenContents.chapter': function (chapterId) { if (chapterId) this.getContentsByStructure(null, chapterId, 'section') },
-        'chosenContents.section': function (sectionId) { if (sectionId) this.getContentsByStructure(null, sectionId, 'subsection') },
+        'chosenContents.chapter': function (chapterId) { if (chapterId) this.getContentsByStructure(null, chapterId, 'section'); this.getNotes(this.chosenContents) },
+        'chosenContents.section': function (sectionId) { if (sectionId) this.getContentsByStructure(null, sectionId, 'subsection'); this.getNotes(this.chosenContents) },
+        'chosenContents.subsection': function (subsectionId) { if (subsectionId) this.getNotes(this.chosenContents) },
         showAddingDialog: function (val) {
             if (val) {
                 this.resetDataNote()
             }
         },
-    }
+    },
+
 }
 </script>

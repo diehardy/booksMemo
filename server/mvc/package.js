@@ -231,5 +231,5 @@ exports.getNotes = async (id_structure, type_structure) =>
     knex("public.notes")
         .select()
         .where('public.notes.parent_structure', id_structure)
-        .andWhere('public.notes.type_structure', type_structure)
+        .andWhere('public.notes.parent_type', type_structure)
         .orderBy('page')

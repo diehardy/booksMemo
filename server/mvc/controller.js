@@ -225,9 +225,9 @@ class qualityController {
 
 
     async getNotes(req, res) {
-        const { id_structure, type_structure } = req.body
+        const { parent_structure, parent_type } = req.body
         try {
-            const all_notes = await Package.getNotes(id_structure, type_structure);
+            const all_notes = await Package.getNotes(parent_structure, parent_type);
             return res.status(200).json({ all_notes })
         } catch (error) {
             console.log(error);
