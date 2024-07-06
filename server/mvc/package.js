@@ -211,10 +211,10 @@ exports.getSubsections = async (id_section) =>
 
 
 
-exports.addNote = async (note_name, note_description, page, timecode, id_book, parent_structure, parent_type) =>
+exports.addNote = async (note_name, note_description, page, timecode, id_book, parent_structure, parent_type, note_type) =>
     knex("public.notes").insert({
-        name: note_name, description: note_description, page: page,
-        timecode: timecode, id_book: id_book, parent_structure: parent_structure, parent_structure: parent_type
+        note_name: note_name, note_description: note_description, page: page,
+        timecode: timecode, id_book: id_book, parent_structure: parent_structure, parent_type: parent_type, note_type
     })
 
 
@@ -223,3 +223,11 @@ exports.editNote = async (id_note, note_name, note_description, page, timecode, 
         note_name: note_name, note_description: note_description, page: page,
         timecode: timecode, id_book: id_book, parent_structure: parent_structure, parent_type: parent_type
     }).where('id_note', id_note)
+
+
+exports.getNotes = async (id_structure, type_structure) =>
+    knex("public.notes")
+        .select()
+        .where('public.notes.parent_structure', id_structure)
+        .andWhere('public.notes.type_structure', type_structure)
+        .orderBy('page')

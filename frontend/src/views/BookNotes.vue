@@ -12,15 +12,19 @@
                 <h4 class="ml-2">{{ book.is_audiobook ? 'Timecode'
                     : 'To add timecodes you have to set a link to an audiobook' }}</h4>
                 <div v-if="book.is_audiobook">
-                    <v-text-field label="Seconds" type="number" min="0" max="59" class="px-5"></v-text-field>
-                    <v-text-field label="Minutes" type="number" min="0" max="59" class="px-5"></v-text-field>
-                    <v-text-field label="Hours" type="number" min="0" max="300" class="px-5"></v-text-field>
+                    <v-text-field label="Seconds" type="number" min="0" max="59" class="px-5"
+                        v-model='timecode.seconds'></v-text-field>
+                    <v-text-field label="Minutes" type="number" min="0" max="59" class="px-5"
+                        v-model="timecode.minutes"></v-text-field>
+                    <v-text-field label="Hours" type="number" min="0" max="300" class="px-5"
+                        v-model="timecode.hours"></v-text-field>
                 </div>
 
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn text="Close" variant="flat" @click="showAddingDialog = false">Close</v-btn>
-                    <v-btn variant="flat" @click="saveNote(null)">Save</v-btn>
+                    <v-btn variant="flat"
+                        @click="saveNote(noteContents, timecode, chosenContents, contentsType)">Save</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -112,6 +116,7 @@ import { httpServer } from "@/main"
 export default {
     data() {
         return {
+            id_book: this.$route.params.id,
             contentsType: '',
             contents: {
                 chapters: [],
@@ -123,10 +128,7 @@ export default {
                 section: '',
                 subsection: ''
             },
-            notes: [{
-                phrase: 'Note phrase',
-                meaning: 'Meaning of the phrase'
-            }],
+            notes: [],
             book: {},
             showAddingDialog: false,
             noteContents: {
@@ -134,7 +136,6 @@ export default {
                 note_name: '',
                 note_description: '',
                 page: null,
-                timecode: null,
             },
             timecode: {
                 seconds: null,
@@ -170,7 +171,7 @@ export default {
         },
         getBookById() {
             httpServer
-                .post("/get-by-id", { id_book: this.$route.params.id })
+                .post("/get-by-id", { id_book: this.id_book })
                 .then((response) => {
                     this.book = response.data
                     console.log(this.book)
@@ -206,35 +207,54 @@ export default {
         },
 
         // notes
-        saveNote(id_note, note_name, note_description, page, timecode, id_book) {
+        saveNote(noteStructure, timecodeStructure, chosenContents, contentsType) {
+            let timecode = Number(timecodeStructure.seconds) + Number(timecodeStructure.hours) * 3600 + Number(timecodeStructure.minutes) * 60
 
             let parent_structure = null
             let parent_type = null
-            if (this.chosenContents.subsection) { parent_structure = this.chosenContents.subsection; parent_type = 'subsection' }
-            else if (this.chosenContents.section) { parent_structure = this.chosenContents.section; parent_type = 'section' }
-            else if (this.chosenContents.chapter) { parent_structure = this.chosenContents.chapter; parent_type = 'chapter' }
+            if (chosenContents.subsection) { parent_structure = chosenContents.subsection; parent_type = 'subsection' }
+            else if (chosenContents.section) { parent_structure = chosenContents.section; parent_type = 'section' }
+            else if (chosenContents.chapter) { parent_structure = chosenContents.chapter; parent_type = 'chapter' }
 
 
             httpServer
-                .post("/save-note", { id_note, note_name, note_description, page, timecode, id_book, parent_structure, parent_type })
-                .then((response) => {
-                    console.log(response.data)
+                .post("/save-note", { id_note: noteStructure.id, note_name: noteStructure.note_name, note_description: noteStructure.note_description, page: noteStructure.page, timecode, id_book: this.id_book, parent_structure, parent_type, note_type: contentsType })
+                .then(() => {
+                    this.resetDataNote()
                 })
                 .catch((error) => {
                     if (error) {
-                        console.log('Contents for this book are not found', error)
+                        console.log('Coudn`t add a note', error)
                     }
                 });
             this.showAddingDialog = false
         },
+        resetDataNote() {
+            this.noteContents = {
+                id_note: null,
+                note_name: '',
+                note_description: '',
+                page: null,
+            }
+            this.timecode = {
+                seconds: null,
+                minutes: null,
+                hours: null,
+            }
+        }
     },
     mounted() {
-        this.getContentsByStructure(this.$route.params.id, null, 'chapter')
+        this.getContentsByStructure(this.id_book, null, 'chapter')
         this.getBookById()
     },
     watch: {
         'chosenContents.chapter': function (chapterId) { if (chapterId) this.getContentsByStructure(null, chapterId, 'section') },
         'chosenContents.section': function (sectionId) { if (sectionId) this.getContentsByStructure(null, sectionId, 'subsection') },
+        showAddingDialog: function (val) {
+            if (val) {
+                this.resetDataNote()
+            }
+        },
     }
 }
 </script>

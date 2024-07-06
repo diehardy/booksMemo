@@ -205,10 +205,10 @@ class qualityController {
 
     async saveNote(req, res) {
         try {
-            let { id_note, note_name, note_description, page, timecode, id_book, parent_structure, parent_type } = req.body;
+            let { id_note, note_name, note_description, page, timecode, id_book, parent_structure, parent_type, note_type } = req.body;
 
             if (id_note) Package.editNote(id_note, note_name, note_description, page, timecode, id_book, parent_structure, parent_type)
-            else Package.addNote(note_name, note_description, page, timecode, id_book, parent_structure, parent_type)
+            else Package.addNote(note_name, note_description, page, timecode, id_book, parent_structure, parent_type, note_type)
 
             return res.status(200).json({ message: 'Note has been added' })
         } catch (error) {
@@ -218,7 +218,16 @@ class qualityController {
     }
 
 
-
+    async getNotes(req, res) {
+        const { id_structure, type_structure } = req.body
+        try {
+            const all_notes = await Package.getNotes(id_structure, type_structure);
+            return res.status(200).json({ all_notes })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Task coudn't be completed." })
+        }
+    }
 
 
 
