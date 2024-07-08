@@ -211,10 +211,10 @@ class qualityController {
 
     async saveNote(req, res) {
         try {
-            let { id_note, note_name, note_description, page, timecode, id_book, parent_structure, parent_type, note_type } = req.body;
-
-            if (id_note) Package.editNote(id_note, note_name, note_description, page, timecode, id_book, parent_structure, parent_type)
-            else Package.addNote(note_name, note_description, page, timecode, id_book, parent_structure, parent_type, note_type)
+            let { id_note, note_word, note_name, note_description, page, timecode, id_book, parent_structure, parent_type, note_type } = req.body;
+            console.log('id_note: ', req.body)
+            if (id_note) Package.editNote(id_note, note_word, note_name, note_description, page, timecode, id_book, parent_structure, parent_type)
+            else Package.addNote(note_word, note_name, note_description, page, timecode, id_book, parent_structure, parent_type, note_type)
 
             return res.status(200).json({ message: 'Note has been added' })
         } catch (error) {

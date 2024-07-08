@@ -197,7 +197,7 @@ export default {
             }
         },
         isActive: function (val) { this.$emit('closeContents', val); },
-        book: function (bookValue) { this.copyBook = bookValue, this.getChapters(this.copyBook.id) }
+        book: function (bookValue) { this.copyBook = bookValue, this.getChapters(this.copyBook.id); }
     },
     computed: {
         hasChapters() {

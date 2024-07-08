@@ -3,10 +3,13 @@
         <h1 class="mt-2 text-uppercase ">Book notes</h1>
         <!-- DIALOG ADDING/EDITING LEARNING NOTE-->
         <v-dialog max-width="500" v-model="showAddingDialog">
-            <v-card title="Add a new note">
-
-                <v-text-field label="Phrase" class="px-5" v-model="noteContents.note_name"></v-text-field>
-                <v-text-field label="Meaning" class="px-5" v-model="noteContents.note_description"></v-text-field>
+            <v-card :title="noteContents.id ? 'Add a new note' : 'Editing a note'">
+                <v-text-field :label="contentsType == 'learning' ? 'Word' : 'Idea'" class="px-5"
+                    v-model="noteContents.note_word"></v-text-field>
+                <v-text-field :label="contentsType == 'learning' ? 'Phrase' : 'Sentence'" class="px-5"
+                    v-model="noteContents.note_name"></v-text-field>
+                <v-text-field :label="contentsType == 'learning' ? 'Meaning' : 'Thoughts'" class="px-5"
+                    v-model="noteContents.note_description"></v-text-field>
                 <v-text-field label="Page" type="number" min="0" max="3000" class="px-5"
                     v-model="noteContents.page"></v-text-field>
                 <h4 class="ml-2">{{ book.is_audiobook ? 'Timecode'
@@ -64,7 +67,7 @@
             </v-tabs>
             <v-card-actions>
                 <v-btn v-if="chosenContents.chapter" class="ml-5" text="Add a note" variant="outlined"
-                    @click="showAddingDialog = true"></v-btn>
+                    @click="showAddingDialog = true, resetDataNote()"></v-btn>
                 <h4 v-else>Choose a chapter</h4>
             </v-card-actions>
             <!-- ALL NOTES -->
@@ -85,15 +88,24 @@
                     </v-tooltip>
                 </template>
                 <v-row class="pa-5 ga-5 align-center">
-                    <v-btn text="Edit" v-bind="activatorProps" variant="outlined" prepend-icon="mdi-file-edit"></v-btn>
+                    <v-btn text="Edit" v-bind="activatorProps" variant="outlined" prepend-icon="mdi-file-edit"
+                        @click="setNote(note), setTimecode(note.timecode)"></v-btn>
                     <v-btn text="Delete" variant="outlined" prepend-icon="mdi-delete" class="mr-5"
                         @click="deleteNote(note.id_note)"></v-btn>
                     <v-row class="justify-end">
-                        <v-chip prepend-icon="mdi-book" class="mx-2 mt-2" color="primary" v-if="note.page">
+                        <v-chip :prepend-icon="contentsType == 'learning' ? 'mdi-book-alphabet' : 'mdi-lightbulb-on'"
+                            class="mx-2 mt-2" color="orange-accent-3" v-if="note.note_word">
+                            <span class="text-grey-darken-3 font-weight-bold">{{ contentsType == 'learning' ? 'Word' :
+                                'Idea' }}:
+                                {{ note.note_word }}</span>
+                        </v-chip>
+                        <v-chip prepend-icon="mdi-book" class="mx-2 mt-2 font-weight-bold" color="primary"
+                            v-if="note.page">
                             Page: {{ note.page }}
                         </v-chip>
                         <a :href="book.audiobook_source + '&t=' + note.timecode" target="_blank" v-if="note.timecode">
-                            <v-chip :model-value="true" class="ma-2" color="green" prepend-icon="mdi-clock-outline">
+                            <v-chip :model-value="true" class="ma-2" color="green font-weight-bold"
+                                prepend-icon="mdi-clock-outline">
                                 {{ formatTimecode(note.timecode) }}
                             </v-chip>
                         </a>
@@ -102,7 +114,7 @@
 
                 </v-row>
                 <v-card-text class="bg-surface-light pt-4">
-                    {{ note.meaning }}
+                    {{ note.note_description }}
                 </v-card-text>
             </v-card>
         </v-row>
@@ -133,6 +145,7 @@ export default {
             showAddingDialog: false,
             noteContents: {
                 id_note: null,
+                note_word: '',
                 note_name: '',
                 note_description: '',
                 page: null,
@@ -200,6 +213,7 @@ export default {
                     break;
                 case 'subsection':
                     this.chosenContents.subsection = null
+                    this.getNotes(this.chosenContents, this.contentsType)
                     break;
                 default:
                     console.log('type not found')
@@ -216,9 +230,9 @@ export default {
             else if (chosenContents.section) { parent_structure = chosenContents.section; parent_type = 'section' }
             else if (chosenContents.chapter) { parent_structure = chosenContents.chapter; parent_type = 'chapter' }
 
-
+            console.log('noteStructure', noteStructure)
             httpServer
-                .post("/save-note", { id_note: noteStructure.id, note_name: noteStructure.note_name, note_description: noteStructure.note_description, page: noteStructure.page, timecode, id_book: this.id_book, parent_structure, parent_type, note_type: contentsType })
+                .post("/save-note", { id_note: noteStructure.id_note, note_word: noteStructure.note_word, note_name: noteStructure.note_name, note_description: noteStructure.note_description, page: noteStructure.page, timecode, id_book: this.id_book, parent_structure, parent_type, note_type: contentsType })
                 .then(() => {
                     this.resetDataNote()
                     this.getNotes(this.chosenContents, this.contentsType)
@@ -230,9 +244,20 @@ export default {
                 });
             this.showAddingDialog = false
         },
+        setNote(note) {
+            this.noteContents = {
+                id_note: note.id_note,
+                note_word: note.note_word,
+                note_name: note.note_name,
+                note_description: note.note_description,
+                page: note.page,
+            }
+            this.showAddingDialog = true
+        },
         resetDataNote() {
             this.noteContents = {
                 id_note: null,
+                note_word: '',
                 note_name: '',
                 note_description: '',
                 page: null,
@@ -278,6 +303,18 @@ export default {
             timecode = timecode - (minutes * 60)
             let seconds = timecode
             return `Timecode: ${hours}h ${minutes}m ${seconds}s`
+        },
+        setTimecode(timecode) {
+            let hours = timecode >= 3600 ? Math.floor(timecode / 3600) : 0
+            timecode = timecode - (hours * 3600)
+            let minutes = timecode >= 60 ? Math.floor(timecode / 60) : 0
+            timecode = timecode - (minutes * 60)
+            let seconds = timecode
+            this.timecode = {
+                hours: hours,
+                minutes: minutes,
+                seconds: seconds
+            }
         }
     },
     mounted() {
@@ -290,7 +327,7 @@ export default {
         'chosenContents.subsection': function (subsectionId) { if (subsectionId) this.getNotes(this.chosenContents, this.contentsType) },
         showAddingDialog: function (val) {
             if (val) {
-                this.resetDataNote()
+                // this.resetDataNote()
             }
         },
         contentsType: function (newType) {
