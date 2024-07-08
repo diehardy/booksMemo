@@ -33,14 +33,52 @@ exports.editBook = async (id, book_name, book_description, is_audiobook, audiobo
         audiobook_source: audiobook_source
     }).where('id', id)
 
-exports.deleteSubsection = async (id_subsection) =>
-    knex("public.subsections").where('id_subsection', id_subsection).delete()
+exports.deleteSubsection = async (id_subsection) => {
+    try {
+        await knex.transaction(async (trx) => {
+
+            // Delete all subsections associated with the section
+            await trx('public.notes')
+                .where('public.notes.parent_structure', id_subsection)
+                .andWhere('public.notes.parent_type', 'subsection')
+                .del();
+
+            // delete the section 
+            await trx("public.subsections")
+                .where('id_subsection', id_subsection).del()
+            // Commit the transaction
+            await trx.commit();
+            console.log('Committed successfully');
+        });
+    } catch (error) {
+        console.error('Transaction rolled back due to error:', error);
+        throw error;
+    }
+}
+
+
 
 exports.deleteSection = async (id_section) => {
     try {
         await knex.transaction(async (trx) => {
 
+            const subsections = await trx('public.subsections')
+                .where('public.subsections.parent_section', id_section)
+                .select('public.subsections.id_subsection')
+
+            const subsectionsIds = subsections.map(subsection => subsection.id_subsection)
+
             // Delete all subsections associated with the section
+            await trx('public.notes')
+                .whereIn('public.notes.parent_structure', subsectionsIds)
+                .andWhere('public.notes.parent_type', 'subsection')
+                .del();
+
+            await trx('public.notes')
+                .where('public.notes.parent_structure', id_section)
+                .andWhere('public.notes.parent_type', 'section')
+                .del();
+
             await trx('public.subsections')
                 .where('public.subsections.parent_section', id_section)
                 .del();
@@ -66,13 +104,33 @@ exports.deleteChapter = async (id_chapter) => {
     try {
         await knex.transaction(async (trx) => {
 
+
             const sections = await trx('public.sections')
                 .where('public.sections.parent_chapter', id_chapter)
                 .select('public.sections.id_section')
 
             const sectionIds = sections.map(section => section.id_section)
 
+            const subsections = await trx('public.subsections')
+                .whereIn('public.subsections.parent_section', sectionIds)
+                .select('public.subsections.id_subsection')
 
+            const subsectionsIds = subsections.map(subsection => subsection.id_subsection)
+
+            // Delete all subsections associated with the section
+            await trx('public.notes')
+                .whereIn('public.notes.parent_structure', subsectionsIds)
+                .andWhere('public.notes.parent_type', 'subsection')
+                .del();
+
+            await trx('public.notes')
+                .whereIn('public.notes.parent_structure', sectionIds)
+                .andWhere('public.notes.parent_type', 'section')
+                .del();
+            await trx('public.notes')
+                .where('public.notes.parent_structure', id_chapter)
+                .andWhere('public.notes.parent_type', 'chapter')
+                .del();
 
             // Delete all subsections associated with the section
             await trx('public.subsections')
@@ -109,6 +167,9 @@ exports.deleteBook = async (id_book) => {
     try {
         await knex.transaction(async (trx) => {
             // Delete all subsections associated with the book
+            await trx('public.notes')
+                .where('public.notes.id_book', id_book)
+                .del();
             await trx('public.subsections')
                 .where('public.subsections.id_book', id_book)
                 .del();
