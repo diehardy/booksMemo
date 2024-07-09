@@ -225,10 +225,16 @@ class qualityController {
 
 
     async getNotes(req, res) {
-        const { parent_structure, parent_type, contentsType } = req.body
+        const { parent_structure, parent_type, contentsType, chosen_page } = req.body
+        const qnt_per_page = 5;
+        const limit = 5;
         try {
-            const all_notes = await Package.getNotes(parent_structure, parent_type, contentsType);
-            return res.status(200).json({ all_notes })
+            const all_notes = await Package.getNotes(parent_structure, parent_type, contentsType, chosen_page, qnt_per_page, limit);
+
+            let total_pages = await Package.countNotes(contentsType);
+            total_pages[0].count = Math.ceil(total_pages[0].count / qnt_per_page)
+            console.log('pages: ', total_pages)
+            return res.status(200).json({ notes: all_notes, pages: total_pages[0].count })
         } catch (error) {
             console.log(error);
             return res.status(500).json({ message: "Task coudn't be completed." })

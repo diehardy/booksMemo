@@ -253,6 +253,9 @@ exports.editSubsection = async (id_subsection, subsection_name) =>
 
 
 // NOTES 
+exports.countNotes = async (contentsType) =>
+    knex("public.notes").select().where('note_type', contentsType).count('id_note')
+
 
 exports.getChapters = async (id_book) =>
     knex("public.chapters")
@@ -290,13 +293,15 @@ exports.editNote = async (id_note, note_word, note_name, note_description, page,
     }).where('id_note', id_note)
 
 
-exports.getNotes = async (id_structure, type_structure, contentsType) =>
+exports.getNotes = async (id_structure, type_structure, contentsType, chosen_page, qnt_per_page, limit) =>
     knex("public.notes")
         .select()
         .where('public.notes.parent_structure', id_structure)
         .andWhere('public.notes.parent_type', type_structure)
         .andWhere('public.notes.note_type', contentsType)
         .orderBy('page')
+        .orderBy('id_note')
+        .offset((chosen_page - 1) * qnt_per_page).limit(Number(limit))
 
 exports.deleteNote = async (id_note) =>
     knex("public.notes").where('id_note', id_note).delete()

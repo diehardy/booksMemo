@@ -118,6 +118,8 @@
                 </v-card-text>
             </v-card>
         </v-row>
+        <v-pagination color="grey-darken-2" :length="total_pages" v-model="chosen_page"
+            v-show="notes.length > 0"></v-pagination>
     </div>
 </template>
 
@@ -135,6 +137,8 @@ export default {
                 sections: [],
                 subsections: [],
             },
+            total_pages: 0,
+            chosen_page: 1,
             chosenContents: {
                 chapter: '',
                 section: '',
@@ -213,7 +217,7 @@ export default {
                     break;
                 case 'subsection':
                     this.chosenContents.subsection = null
-                    this.getNotes(this.chosenContents, this.contentsType)
+                    this.getNotes(this.chosenContents, this.contentsType, this.chosen_page)
                     break;
                 default:
                     console.log('type not found')
@@ -235,7 +239,7 @@ export default {
                 .post("/save-note", { id_note: noteStructure.id_note, note_word: noteStructure.note_word, note_name: noteStructure.note_name, note_description: noteStructure.note_description, page: noteStructure.page, timecode, id_book: this.id_book, parent_structure, parent_type, note_type: contentsType })
                 .then(() => {
                     this.resetDataNote()
-                    this.getNotes(this.chosenContents, this.contentsType)
+                    this.getNotes(this.chosenContents, this.contentsType, this.chosen_page)
                 })
                 .catch((error) => {
                     if (error) {
@@ -268,17 +272,19 @@ export default {
                 hours: null,
             }
         },
-        getNotes(chosenContents, contentsType) {
+        getNotes(chosenContents, contentsType, chosen_page) {
             let parent_type = ''
             let parent_structure = null
             if (chosenContents.subsection) { parent_type = 'subsection'; parent_structure = chosenContents.subsection }
             else if (chosenContents.section) { parent_type = 'section'; parent_structure = chosenContents.section }
             else if (chosenContents.chapter) { parent_type = 'chapter'; parent_structure = chosenContents.chapter }
             httpServer
-                .post("/get-notes", { parent_structure, parent_type, contentsType })
+                .post("/get-notes", { parent_structure, parent_type, contentsType, chosen_page })
                 .then((response) => {
-                    this.notes = response.data.all_notes
-                    console.log(this.notes)
+                    console.log(response.data)
+                    this.notes = response.data.notes
+                    this.total_pages = response.data.pages
+                    console.log('notes', this.notes)
                 })
                 .catch((error) => {
                     if (error) {
@@ -289,7 +295,7 @@ export default {
         deleteNote(id_note) {
             httpServer
                 .post("/delete-note", { id_note })
-                .then(() => { this.getNotes(this.chosenContents, this.contentsType) })
+                .then(() => { this.getNotes(this.chosenContents, this.contentsType, this.chosen_page) })
                 .catch((error) => {
                     if (error) {
                         console.log('Cannot be deleted because: ', error)
@@ -322,16 +328,19 @@ export default {
         this.getBookById()
     },
     watch: {
-        'chosenContents.chapter': function (chapterId) { if (chapterId) this.getContentsByStructure(null, chapterId, 'section'); this.getNotes(this.chosenContents, this.contentsType) },
-        'chosenContents.section': function (sectionId) { if (sectionId) this.getContentsByStructure(null, sectionId, 'subsection'); this.getNotes(this.chosenContents, this.contentsType) },
-        'chosenContents.subsection': function (subsectionId) { if (subsectionId) this.getNotes(this.chosenContents, this.contentsType) },
+        'chosenContents.chapter': function (chapterId) { if (chapterId) this.getContentsByStructure(null, chapterId, 'section'); this.getNotes(this.chosenContents, this.contentsType, this.chosen_page) },
+        'chosenContents.section': function (sectionId) { if (sectionId) this.getContentsByStructure(null, sectionId, 'subsection'); this.getNotes(this.chosenContents, this.contentsType, this.chosen_page) },
+        'chosenContents.subsection': function (subsectionId) { if (subsectionId) this.getNotes(this.chosenContents, this.contentsType, this.chosen_page) },
         showAddingDialog: function (val) {
             if (val) {
                 // this.resetDataNote()
             }
         },
         contentsType: function (newType) {
-            this.getNotes(this.chosenContents, newType)
+            this.getNotes(this.chosenContents, newType, this.chosen_page)
+        },
+        chosen_page: function (newPage) {
+            this.getNotes(this.chosenContents, this.contentsType, newPage)
         },
     },
 
