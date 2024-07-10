@@ -1,7 +1,19 @@
 <template>
-  <router-view />
-</template>
+  <div>
+    <SideMenu />
 
+    <router-view />
+  </div>
+</template>
+<script>
+import SideMenu from './components/SideMenu.vue';
+
+export default {
+  components: {
+    SideMenu,
+  },
+};
+</script>
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

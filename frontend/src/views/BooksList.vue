@@ -114,6 +114,7 @@ export default {
     BookForm,
     ContentsForm,
     BookCards,
+
   },
 }
 </script>
