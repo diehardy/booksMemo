@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <v-container>
     <SideMenu />
 
     <router-view />
-  </div>
+  </v-container>
 </template>
 <script>
 import SideMenu from './components/SideMenu.vue';
@@ -29,10 +29,11 @@ nav {
 
 nav a {
   font-weight: bold;
-  color: #2c3e50;
+  color: #12171c;
+  text-decoration: none
 }
 
 nav a.router-link-exact-active {
-  color: #42b983;
+  color: #42a5b9;
 }
 </style>
