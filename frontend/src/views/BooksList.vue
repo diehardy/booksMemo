@@ -1,10 +1,10 @@
 <template>
   <div>
-    <h1 class="mt-2 text-uppercase ">Your books</h1>
+    <h1 class="mt-2 text-uppercase">Books</h1>
 
     <v-row>
       <v-col>
-        <v-btn class="ml-5" text="Add a book" variant="outlined" @click="showAudiobookDialogue = true"></v-btn>
+        <v-btn text="Add a book" variant="outlined" @click="showAudiobookDialogue = true"></v-btn>
       </v-col>
     </v-row>
     <BookForm :showAddingDialog="showAudiobookDialogue" :book="book" @close="updateAddingDialog" @saveBook="saveBook" />

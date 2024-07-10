@@ -1,20 +1,21 @@
 <template>
-    <v-card style="width: 80px; z-index: 999999 !important">
+    <v-card style="width: 80px; z-index: 999999 !important; ">
         <v-fab icon="mdi-menu" @click.stop="drawer = !drawer" v-if="isMobile" variant="flat" color="grey-darken-2"
             class="mobile-btn"></v-fab>
 
         <v-icon icon="mdi-menu" @click.stop="drawer = !drawer" v-if="!isMobile && !drawer" variant="outlined"></v-icon>
         <v-layout>
-            <v-navigation-drawer v-model="drawer" class="v-navigation-drawer" mobile color="white">
+            <v-navigation-drawer v-model="drawer" class="v-navigation-drawer" color="white">
                 <v-list-item class="menu-btn" append-icon=" mdi-close" @click.stop="drawer = !drawer"></v-list-item>
 
-                <v-list-item prepend-avatar="https://randomuser.me/api/portraits/men/78.jpg"
+                <v-list-item
+                    prepend-avatar="https://t3.ftcdn.net/jpg/05/02/46/42/360_F_502464267_VlxSlxp5trEnRurdfYP5y0QW9JCCiTQ7.jpg"
                     title="Your name"></v-list-item>
 
                 <v-divider></v-divider>
 
                 <v-list density="compact" nav>
-                    <RouterLink to="/books">
+                    <RouterLink to="/books" :class="{ 'router-link-exact-active': isBook }">
                         <v-list-item prepend-icon="mdi-bookshelf" title="Books" value=""></v-list-item>
                     </RouterLink>
                     <RouterLink to="/videos">
@@ -41,6 +42,11 @@ export default {
             isMobile: navigator.userAgentData.mobile
         }
     },
+    computed: {
+        isBook() {
+            return this.$route.path === '/books' || this.$route.path.startsWith('/book/');
+        }
+    }
 }
 </script>
 
