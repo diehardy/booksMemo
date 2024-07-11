@@ -10,7 +10,7 @@
 
                 <v-list-item
                     prepend-avatar="https://t3.ftcdn.net/jpg/05/02/46/42/360_F_502464267_VlxSlxp5trEnRurdfYP5y0QW9JCCiTQ7.jpg"
-                    title="Your name"></v-list-item>
+                    title="DiHardy"></v-list-item>
 
                 <v-divider></v-divider>
 

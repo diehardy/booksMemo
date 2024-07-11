@@ -1,7 +1,7 @@
 <template>
     <v-row class="d-flex justify-center flex-wrap ga-5  ma-5">
-        <v-card color="grey-darken-2" v-for="book in list_of_books" :key="book" cols="2" class="mx-auto text-left"
-            prepend-icon="mdi-book-open-blank-variant" width="1200" variant="outlined">
+        <v-card color="grey-darken-2" v-for="(book, index) in list_of_books" :key="index" cols="2"
+            class="mx-auto text-left" prepend-icon="mdi-book-open-blank-variant" width="1200" variant="outlined">
             <template v-slot:title>
                 <span class="font-weight-black new-line">{{ book.name }}</span>
                 <v-tooltip

@@ -33,6 +33,14 @@ router.post("/get-notes", controller.getNotes);
 router.post("/delete-note", controller.deleteNote);
 
 
+// VIDEOS
+router.post("/get-videos", controller.getVideos);
+
+router.post("/save-video", controller.saveVideo);
+
+
+router.post("/delete-video", controller.deleteVideo);
+
 
 
 

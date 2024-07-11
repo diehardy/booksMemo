@@ -253,6 +253,56 @@ class qualityController {
         }
     }
 
+
+    // VIDEOS
+
+
+    async saveVideo(req, res) {
+        try {
+            let { id_video, video_name, video_link } = req.body;
+
+            if (id_video) Package.editVideo(id_video, video_name, video_link)
+            else Package.addVideo(video_name, video_link)
+
+            return res.status(200).json({ message: 'Video has been added' })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Video hasn't been added" })
+        }
+    }
+
+
+    async getVideos(req, res) {
+        const { chosen_page } = req.body
+        const qnt_per_page = 5;
+        const limit = 5;
+        try {
+            const all_videos = await Package.getVideos(chosen_page, qnt_per_page, limit);
+
+            let total_pages = await Package.countVideos();
+            total_pages[0].count = Math.ceil(total_pages[0].count / qnt_per_page)
+            console.log('pages: ', total_pages)
+            return res.status(200).json({ videos: all_videos, pages: total_pages[0].count })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Task coudn't be completed." })
+        }
+    }
+
+    async deleteVideo(req, res) {
+        try {
+            let { id_video } = req.body;
+
+            await Package.deleteVideo(id_video)
+            return res.status(200).json({ message: 'Video has been deleted' })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Video hasn't been added" })
+        }
+    }
+
+
+
 }
 
 module.exports = new qualityController();

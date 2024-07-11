@@ -305,3 +305,39 @@ exports.getNotes = async (id_structure, type_structure, contentsType, chosen_pag
 
 exports.deleteNote = async (id_note) =>
     knex("public.notes").where('id_note', id_note).delete()
+
+
+// VIDEOS
+
+
+exports.addVideo = async (video_name, video_link) =>
+    knex("public.videos").insert({
+        video_name: video_name, video_link: video_link
+    })
+exports.editVideo = async (id_video, video_name, video_link) =>
+    knex("public.videos").update({
+        video_name: video_name, video_link: video_link
+    }).where('id_video', id_video)
+
+
+exports.getVideos = async (chosen_page, qnt_per_page, limit) =>
+    knex("public.videos").select().orderBy('id_video', 'asc').offset((chosen_page - 1) * qnt_per_page).limit(Number(limit))
+
+exports.countVideos = async () =>
+    knex("public.videos").select().count('id_video')
+
+
+exports.deleteVideo = async (id_video) => {
+    try {
+        await knex.transaction(async (trx) => {
+            await trx("public.videos")
+                .where('id_video', id_video).del()
+            // Commit the transaction
+            await trx.commit();
+            console.log('Committed successfully');
+        });
+    } catch (error) {
+        console.error('Transaction rolled back due to error:', error);
+        throw error;
+    }
+}
