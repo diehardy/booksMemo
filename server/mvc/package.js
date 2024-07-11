@@ -341,3 +341,20 @@ exports.deleteVideo = async (id_video) => {
         throw error;
     }
 }
+
+
+// VIDEO NOTES
+
+
+
+
+exports.addVideoNote = async (video_word, video_phrase, video_explanation, id_video, timecode, note_type) =>
+    knex("public.video_notes").insert({
+        video_word: video_word, video_phrase: video_phrase, video_explanation: video_explanation, id_video: id_video, timecode: timecode, note_type: note_type
+    })
+
+
+exports.editVideoNote = async (id_note, video_word, video_phrase, video_explanation, id_video, timecode, note_type) =>
+    knex("public.notes").update({
+        video_word: video_word, video_phrase: video_phrase, video_explanation: video_explanation, id_video: id_video, timecode: timecode, note_type: note_type
+    }).where('id_note', id_note)

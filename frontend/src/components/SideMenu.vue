@@ -18,7 +18,7 @@
                     <RouterLink to="/books" :class="{ 'router-link-exact-active': isBook }">
                         <v-list-item prepend-icon="mdi-bookshelf" title="Books" value=""></v-list-item>
                     </RouterLink>
-                    <RouterLink to="/videos">
+                    <RouterLink to="/videos" :class="{ 'router-link-exact-active': isVideo }">
                         <v-list-item prepend-icon="mdi-play-box-multiple" title="Videos" value="about"></v-list-item>
                     </RouterLink>
                     <RouterLink to="/settings">
@@ -45,6 +45,10 @@ export default {
     computed: {
         isBook() {
             return this.$route.path === '/books' || this.$route.path.startsWith('/book/');
+        },
+        isVideo() {
+            return this.$route.path === '/videos' || this.$route.path.startsWith('/video/');
+
         }
     }
 }

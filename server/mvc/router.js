@@ -42,6 +42,8 @@ router.post("/save-video", controller.saveVideo);
 router.post("/delete-video", controller.deleteVideo);
 
 
+// VIDEO NOTES
+router.post("/save-video-note", controller.saveVideoNote);
 
 
 

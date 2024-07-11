@@ -301,7 +301,19 @@ class qualityController {
         }
     }
 
-
+    // VIDEO NOTES
+    async saveVideoNote(req, res) {
+        try {
+            console.log(req.body)
+            let { id_note, video_word, video_phrase, video_explanation, id_video, timecode, note_type } = req.body;
+            if (id_note) Package.editVideoNote(id_note, video_word, video_phrase, video_explanation, id_video, timecode, note_type)
+            else Package.addVideoNote(video_word, video_phrase, video_explanation, id_video, timecode, note_type)
+            return res.status(200).json({ message: 'Note has been added' })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Note hasn't been added" })
+        }
+    }
 
 }
 
