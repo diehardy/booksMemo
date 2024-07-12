@@ -12,7 +12,7 @@ router.post("/save", controller.saveBook);
 
 router.post("/delete", controller.deleteBook);
 
-
+router.post("/check-book", controller.checkBook);
 
 // CONTENTS
 
@@ -41,10 +41,13 @@ router.post("/save-video", controller.saveVideo);
 
 router.post("/delete-video", controller.deleteVideo);
 
+router.post("/check-video", controller.checkVideo);
 
 // VIDEO NOTES
 router.post("/save-video-note", controller.saveVideoNote);
 
+router.post("/get-video-notes", controller.getVideoNotes);
+router.post("/delete-video-note", controller.deleteVideoNote);
 
 
 module.exports = router;

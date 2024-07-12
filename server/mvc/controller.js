@@ -7,6 +7,20 @@ class qualityController {
 
 
     // BOOKS
+
+    async checkBook(req, res) {
+        try {
+            let { id_book } = req.body;
+
+            const hasBook = await Package.checkBook(id_book)
+            if (hasBook.length > 0) return res.status(200).json(true)
+            else return res.status(200).json(false)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Something went wrong" })
+        }
+    }
+
     async getBooks(req, res) {
         const { chosen_page } = req.body
         const qnt_per_page = 5;
@@ -271,6 +285,19 @@ class qualityController {
         }
     }
 
+    async checkVideo(req, res) {
+        try {
+            let { id_video } = req.body;
+
+            const hasVideo = await Package.checkVideo(id_video)
+            if (hasVideo.length > 0) return res.status(200).json(true)
+            else return res.status(200).json(false)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Something went wrong" })
+        }
+    }
+
 
     async getVideos(req, res) {
         const { chosen_page } = req.body
@@ -309,6 +336,38 @@ class qualityController {
             if (id_note) Package.editVideoNote(id_note, video_word, video_phrase, video_explanation, id_video, timecode, note_type)
             else Package.addVideoNote(video_word, video_phrase, video_explanation, id_video, timecode, note_type)
             return res.status(200).json({ message: 'Note has been added' })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Note hasn't been added" })
+        }
+    }
+
+
+    async getVideoNotes(req, res) {
+        const { contentsType, chosen_page } = req.body
+        const qnt_per_page = 5;
+        const limit = 5;
+        try {
+            const all_notes = await Package.getVideoNotes(contentsType, chosen_page, qnt_per_page, limit);
+
+            let total_pages = await Package.countVideoNotes(contentsType);
+            total_pages[0].count = Math.ceil(total_pages[0].count / qnt_per_page)
+            console.log('pages: ', total_pages)
+            return res.status(200).json({ notes: all_notes, pages: total_pages[0].count })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Task coudn't be completed." })
+        }
+    }
+
+
+
+    async deleteVideoNote(req, res) {
+        try {
+            let { id_note } = req.body;
+
+            await Package.deleteVideoNote(id_note)
+            return res.status(200).json({ message: 'Note has been deleted' })
         } catch (error) {
             console.log(error);
             return res.status(500).json({ message: "Note hasn't been added" })

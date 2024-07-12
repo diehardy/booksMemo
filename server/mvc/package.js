@@ -11,7 +11,8 @@ const knex = require("knex")({
 console.log(process.env.DB_HOST)
 
 // BOOKS
-
+exports.checkBook = async (id_book) =>
+    knex("public.books").select().where('id', id_book)
 
 exports.getBooks = async (chosen_page, qnt_per_page, limit) =>
     knex("public.books").select().orderBy('id', 'asc').offset((chosen_page - 1) * qnt_per_page).limit(Number(limit))
@@ -308,7 +309,8 @@ exports.deleteNote = async (id_note) =>
 
 
 // VIDEOS
-
+exports.checkVideo = async (id_video) =>
+    knex("public.videos").select().where('id_video', id_video)
 
 exports.addVideo = async (video_name, video_link) =>
     knex("public.videos").insert({
@@ -330,6 +332,10 @@ exports.countVideos = async () =>
 exports.deleteVideo = async (id_video) => {
     try {
         await knex.transaction(async (trx) => {
+            // delete video notes
+            await trx("public.video_notes")
+                .where('id_video', id_video).del()
+
             await trx("public.videos")
                 .where('id_video', id_video).del()
             // Commit the transaction
@@ -355,6 +361,21 @@ exports.addVideoNote = async (video_word, video_phrase, video_explanation, id_vi
 
 
 exports.editVideoNote = async (id_note, video_word, video_phrase, video_explanation, id_video, timecode, note_type) =>
-    knex("public.notes").update({
+    knex("public.video_notes").update({
         video_word: video_word, video_phrase: video_phrase, video_explanation: video_explanation, id_video: id_video, timecode: timecode, note_type: note_type
     }).where('id_note', id_note)
+
+exports.getVideoNotes = async (contentsType, chosen_page, qnt_per_page, limit) =>
+    knex("public.video_notes")
+        .join('videos', 'video_notes.id_video', '=', 'videos.id_video')
+        .select()
+        .where('public.video_notes.note_type', contentsType)
+        .orderBy('id_note')
+        .offset((chosen_page - 1) * qnt_per_page).limit(Number(limit))
+
+exports.countVideoNotes = async (contentsType) =>
+    knex("public.video_notes").select().where('note_type', contentsType).count('id_note')
+
+
+exports.deleteVideoNote = async (id_note) =>
+    knex("public.video_notes").where('id_note', id_note).delete()

@@ -162,6 +162,18 @@ export default {
         }
     },
     methods: {
+        checkBook() {
+            httpServer
+                .post("/check-book", { id_book: this.id_book })
+                .then((response) => {
+                    if (!response.data) this.$router.push({ path: `/books` })
+                })
+                .catch((error) => {
+                    if (error) {
+                        console.log('Contents for this book are not found', error)
+                    }
+                });
+        },
         getContentsByStructure(id_book, id_structure, type) {
             httpServer
                 .post("/get-contents-by-id", { id_book: id_book, id_structure: id_structure, type: type, })
@@ -324,6 +336,7 @@ export default {
         }
     },
     mounted() {
+        this.checkBook()
         this.getContentsByStructure(this.id_book, null, 'chapter')
         this.getBookById()
     },
