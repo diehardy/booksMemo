@@ -5,7 +5,6 @@ const router = require("./router")
 
 class qualityController {
 
-
     // BOOKS
 
     async checkBook(req, res) {

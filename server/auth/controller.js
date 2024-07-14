@@ -2,38 +2,26 @@ const { response } = require("express");
 const Package = require("./package")
 const router = require("./router")
 
-
-
-
-
-
-
-
 class qualityController {
 
-    async authStart(req, res) {
+    async authorizeUser(id_user, name, email, icon) {
         try {
-
-
-            return res.status(200).json({ user: 'success' })
+            console.log('search for a user')
+            const user = await Package.checkUser(id_user)
+            if (user[0]) {
+                console.log('updating')
+                await Package.updateUser(id_user, name, email, icon)
+            } else {
+                console.log('adding')
+                await Package.addUser(id_user, name, email, icon)
+            }
+            return { message: 'ok' }
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ message: "Something went wrong" })
+            // return res.status(500).json({ message: "Something went wrong" })
         }
     }
 
-
-    async authCallback(req, res) {
-        try {
-            console.log('req:', req.body)
-
-
-            return res.status(200).json({ user: 'req.body' })
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({ message: "Something went wrong" })
-        }
-    }
 
 
 }

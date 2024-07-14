@@ -2,15 +2,15 @@ import { createRouter, createWebHistory } from 'vue-router'
 import BooksList from '../views/BooksList.vue'
 import BookNotes from '../views/BookNotes.vue'
 import VideoNotes from '../views/VideoNotes.vue'
-
+import LandingPage from '../views/LandingPage.vue'
 import VideosList from '../views/VideosList.vue'
 import Settings from '../views/SettingsPage.vue'
 
 const routes = [
   {
     path: '',
-    name: 'BooksList2',
-    component: BooksList
+    name: 'LandingPage',
+    component: LandingPage
   },
   {
     path: '/books',

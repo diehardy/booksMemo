@@ -9,29 +9,32 @@ const session = require('express-session')
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: `${process.env.APP_URL}/api/auth/google/callback` // THIS FUNCTIONS RUNS AFTER COMPLETION OF AUTHENTICATION (AFTER FUNCTION)
+    callbackURL: `${process.env.APP_URL}/api/auth/google/callback` // THIS RUNS AFTER COMPLETION OF AUTHENTICATION (AFTER FUNCTION)
 },
     function (accessToken, refreshToken, profile, cb) { // this function invoked is authorization is successfull
-        console.log(profile)
-        if (true) console.log('user exists')
-        else console.log('user does not exist');
-        // User.findOrCreate({ googleId: profile.id }, function (err, user) {
-        //     return cb(err, user);
-        // });
-        return profile
+
+        if (profile.id) {
+            const user = controller.authorizeUser(profile.id, profile.displayName, profile.emails[0].value, profile.photos[0].value)
+        } else {
+            console.log('user does not exist.')
+        }
     }
 ));
 
 
 
 // Auth
-router.get("/google", passport.authenticate('google', { scope: ['profile'] }));
+router.get("/google", passport.authenticate('google', { scope: ['profile', 'email'] })); // start auth
 
 
 
 router.get("/google/callback",
     passport.authenticate('google', { failureRedirect: '/' }, // this line happens if failure
-        controller.authCallback)
+        (req, res) => {
+            console.log('succeed')
+            return { message: 'http://localhost:8080/' }
+
+        })
 );
 
 

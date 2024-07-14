@@ -18,12 +18,6 @@ const app = express();
 
 // passport
 
-
-
-
-
-
-
 app.use(cors(corsOptions)); // middleware for cors
 app.use(express.json());    // middleware for json
 

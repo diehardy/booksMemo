@@ -9,5 +9,15 @@ const knex = require("knex")({
     },
 });
 
-// exports.deleteVideoNote = async (id_note) =>
-//     knex("public.video_notes").where('id_note', id_note).delete()
+exports.checkUser = async (id_user) =>
+    knex("public.users").select().where('google_id', id_user)
+
+exports.addUser = async (id_user, name, email, icon) =>
+    knex("public.users").insert({
+        google_id: id_user, name: name, email: email, icon: icon
+    })
+
+exports.updateUser = async (id_user, name, email, icon) =>
+    knex("public.users").update({
+        name: name, email: email, icon: icon
+    }).where('google_id', id_user)
