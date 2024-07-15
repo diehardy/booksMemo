@@ -16,7 +16,7 @@ passport.use(new GoogleStrategy({
         if (profile.id) {
             const user = controller.authorizeUser(profile.id, profile.displayName, profile.emails[0].value, profile.photos[0].value)
         } else {
-            console.log('user does not exist.')
+            console.log('google user does not exist.')
         }
     }
 ));
@@ -29,12 +29,18 @@ router.get("/google", passport.authenticate('google', { scope: ['profile', 'emai
 
 
 router.get("/google/callback",
-    passport.authenticate('google', { failureRedirect: '/' }, // this line happens if failure
-        (req, res) => {
-            console.log('succeed')
-            return { message: 'http://localhost:8080/' }
+    (req, res) => {
+        console.log('successful login')
+        res.redirect('http://localhost:8080/books')
+    }
+);
 
-        })
+
+
+router.get("/profile", (req, res) => {
+    req.send('<h1>try this</h1>')
+}
+
 );
 
 

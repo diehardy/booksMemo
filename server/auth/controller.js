@@ -6,7 +6,7 @@ class qualityController {
 
     async authorizeUser(id_user, name, email, icon) {
         try {
-            console.log('search for a user')
+            console.log('searching for a user...')
             const user = await Package.checkUser(id_user)
             if (user[0]) {
                 console.log('updating')
