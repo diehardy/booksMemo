@@ -11,15 +11,50 @@ passport.use(new GoogleStrategy({
     clientSecret: process.env.CLIENT_SECRET,
     callbackURL: `${process.env.APP_URL}/api/auth/google/callback` // THIS RUNS AFTER COMPLETION OF AUTHENTICATION (AFTER FUNCTION)
 },
-    function (accessToken, refreshToken, profile, cb) { // this function invoked is authorization is successfull
+    async function (accessToken, refreshToken, profile, cb) { // this function invoked is authorization is successfull
 
-        if (profile.id) {
-            const user = controller.authorizeUser(profile.id, profile.displayName, profile.emails[0].value, profile.photos[0].value)
-        } else {
-            console.log('google user does not exist.')
+        try {
+            if (profile.id) {
+                const user = await controller.authorizeUser(profile.id, profile.displayName, profile.emails[0].value, profile.photos[0].value)
+                return cb(null, user)
+            } else {
+                throw new Error('google user does not exist.')
+            }
+        }
+        catch (err) {
+            return cb(err, null)
         }
     }
 ));
+
+// serialize user into the session
+passport.serializeUser((user, done) => {
+    console.log(`Initial serialize user:`);
+    console.log(user);
+
+    done(null, user.id)
+})
+
+
+// deserialize user from the session
+
+
+passport.deserializeUser((id, done) => {
+    try {
+        console.log(`deserialize user id:`);
+        console.log(id);
+        const user = controller.findUser(id)
+        if (!user[0]) throw new Error('User not found')
+        done(null, user) // im not sure credentials are match passport
+    }
+    catch (err) {
+        done(null, id)
+    }
+})
+
+
+
+
 
 
 
@@ -28,20 +63,18 @@ router.get("/google", passport.authenticate('google', { scope: ['profile', 'emai
 
 
 
-router.get("/google/callback",
+router.get('/google/callback',
+    passport.authenticate('google', { failureRedirect: '/' }),
     (req, res) => {
-        console.log('successful login')
-        res.redirect('http://localhost:8080/books')
+        console.log(req)
+        console.log(req.session) // here is id of user
+        res.redirect('/books');
     }
 );
 
 
 
-router.get("/profile", (req, res) => {
-    req.send('<h1>try this</h1>')
-}
 
-);
 
 
 module.exports = router;

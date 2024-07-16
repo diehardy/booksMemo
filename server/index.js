@@ -14,12 +14,33 @@ let corsOptions = {
 };
 
 const app = express();
+const passport = require('passport')
+const session = require('express-session')
+
+
+
+
+
+
+
+
 
 
 // passport
 
 app.use(cors(corsOptions)); // middleware for cors
 app.use(express.json());    // middleware for json
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 60000 * 60 }
+}))
+
+// initialize passport
+app.use(passport.initialize())
+app.use(passport.session())
+
 
 // routers
 app.use('/api/books/', router)

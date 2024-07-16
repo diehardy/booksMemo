@@ -15,11 +15,16 @@ class qualityController {
                 console.log('adding')
                 await Package.addUser(id_user, name, email, icon)
             }
-            return { message: 'ok' }
+            return { id: id_user, name, icon, email }
         } catch (error) {
             console.log(error);
             // return res.status(500).json({ message: "Something went wrong" })
         }
+    }
+
+    async findUser(id_user) {
+        const user = await Package.checkUser(id_user)
+        return user
     }
 
 
