@@ -68,11 +68,14 @@ router.get('/google/callback',
     (req, res) => {
         console.log(req)
         console.log(req.session) // here is id of user
-        res.redirect('/books');
+        res.redirect(`${process.env.START_PAGE}`);
     }
 );
 
-
+// router.get('/check-status', (req, res) => {
+//     console.log(req)
+// }
+// );
 
 
 

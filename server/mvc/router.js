@@ -4,7 +4,7 @@ const controller = require("./controller");
 
 
 // BOOKS
-router.post("/get", controller.getBooks);
+router.post("/get", controller.isAuthenticated, controller.getBooks);
 
 router.post("/get-by-id", controller.getBookById);
 

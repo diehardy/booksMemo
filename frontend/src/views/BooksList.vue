@@ -57,7 +57,7 @@ export default {
           this.list_of_books = response.data.all_books
         })
         .catch((error) => {
-          console.log(error);
+          if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
         });
     },
     deleteBook(id_book) {

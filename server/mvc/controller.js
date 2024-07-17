@@ -3,7 +3,25 @@ const Package = require("./package")
 const router = require("./router")
 
 
+
+
+
 class qualityController {
+    // middleware
+    isAuthenticated = (req, res, next) => {
+        console.log('starting authentication...');
+        console.log('req.user: ', req.user); // Add this line
+
+
+        if (req.isAuthenticated()) {
+            console.log('success')
+            return next();
+        }
+        res.status(401).send('Unauthorized');
+    };
+
+
+
 
     // BOOKS
 

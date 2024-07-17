@@ -19,17 +19,10 @@ const session = require('express-session')
 
 
 
-
-
-
-
-
-
-
-// passport
-
 app.use(cors(corsOptions)); // middleware for cors
 app.use(express.json());    // middleware for json
+
+// cookie
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
