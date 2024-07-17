@@ -1,20 +1,20 @@
 const { response } = require("express");
 const Package = require("./package")
 const router = require("./router")
-
+const PackageAuth = require("../auth/package")
 
 
 
 
 class qualityController {
     // middleware
-    isAuthenticated = (req, res, next) => {
+    isAuthenticated = async (req, res, next) => {
         console.log('starting authentication...');
         console.log('req.user: ', req.user); // Add this line
 
-
         if (req.isAuthenticated()) {
-            console.log('success')
+            res.locals.user = await PackageAuth.checkUser(req.user);
+            console.log(`success auth of ${req.user}`)
             return next();
         }
         res.status(401).send('Unauthorized');
@@ -39,6 +39,7 @@ class qualityController {
     }
 
     async getBooks(req, res) {
+        console.log('locals user: ', res.locals.user)
         const { chosen_page } = req.body
         const qnt_per_page = 5;
         const limit = 5;
