@@ -33,35 +33,13 @@
 
 
 <script>
-import { httpServer } from "@/main"
 
 export default {
-    data() {
-        return {
-        }
-    },
     props: {
         list_of_books: {
             type: Array,
             required: true,
         }
     },
-    methods: {
-        getBookById(id_book) {
-
-            httpServer
-                .post("/get-by-id", {
-                    id_book: id_book
-                })
-                .then((response) => {
-                    this.book = { ...response.data }
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-        },
-    },
-
-
 }
 </script>

@@ -6,48 +6,48 @@ const controller = require("./controller");
 // BOOKS
 router.post("/get", controller.isAuthenticated, controller.getBooks);
 
-router.post("/get-by-id", controller.getBookById);
+router.post("/get-by-id", controller.isAuthenticated, controller.getBookById);
 
-router.post("/save", controller.saveBook);
+router.post("/save", controller.isAuthenticated, controller.saveBook);
 
-router.post("/delete", controller.deleteBook);
+router.post("/delete", controller.isAuthenticated, controller.deleteBook);
 
-router.post("/check-book", controller.checkBook);
+router.post("/check-book", controller.isAuthenticated, controller.checkBook);
 
 // CONTENTS
 
-router.post("/get-contents", controller.getContents);
+router.post("/get-contents", controller.isAuthenticated, controller.getContents);
 
-router.post("/save-contents", controller.saveContents);
+router.post("/save-contents", controller.isAuthenticated, controller.saveContents);
 
 
-router.post("/delete-contents", controller.deleteContents);
+router.post("/delete-contents", controller.isAuthenticated, controller.deleteContents);
 
 
 // NOTES
-router.post("/get-contents-by-id", controller.getContentsById);
+router.post("/get-contents-by-id", controller.isAuthenticated, controller.getContentsById);
 
-router.post("/save-note", controller.saveNote);
+router.post("/save-note", controller.isAuthenticated, controller.saveNote);
 
-router.post("/get-notes", controller.getNotes);
-router.post("/delete-note", controller.deleteNote);
+router.post("/get-notes", controller.isAuthenticated, controller.getNotes);
+router.post("/delete-note", controller.isAuthenticated, controller.deleteNote);
 
 
 // VIDEOS
-router.post("/get-videos", controller.getVideos);
+router.post("/get-videos", controller.isAuthenticated, controller.getVideos);
 
-router.post("/save-video", controller.saveVideo);
+router.post("/save-video", controller.isAuthenticated, controller.saveVideo);
 
 
-router.post("/delete-video", controller.deleteVideo);
+router.post("/delete-video", controller.isAuthenticated, controller.deleteVideo);
 
-router.post("/check-video", controller.checkVideo);
+router.post("/check-video", controller.isAuthenticated, controller.checkVideo);
 
 // VIDEO NOTES
-router.post("/save-video-note", controller.saveVideoNote);
+router.post("/save-video-note", controller.isAuthenticated, controller.saveVideoNote);
 
-router.post("/get-video-notes", controller.getVideoNotes);
-router.post("/delete-video-note", controller.deleteVideoNote);
+router.post("/get-video-notes", controller.isAuthenticated, controller.getVideoNotes);
+router.post("/delete-video-note", controller.isAuthenticated, controller.deleteVideoNote);
 
 
 module.exports = router;

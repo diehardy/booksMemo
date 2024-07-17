@@ -166,6 +166,7 @@ export default {
             httpServer
                 .post("/check-book", { id_book: this.id_book })
                 .then((response) => {
+                    console.log('check', response.data)
                     if (!response.data) this.$router.push({ path: `/books` })
                 })
                 .catch((error) => {
@@ -203,7 +204,6 @@ export default {
                 .post("/get-by-id", { id_book: this.id_book })
                 .then((response) => {
                     this.book = response.data
-                    console.log(this.book)
                 })
                 .catch((error) => {
                     if (error) {

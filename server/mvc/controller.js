@@ -3,20 +3,22 @@ const Package = require("./package")
 const router = require("./router")
 const PackageAuth = require("../auth/package")
 
+// USER
 
+// console.log('locals user: ', res.locals.user[0].google_id
 
 
 class qualityController {
     // middleware
     isAuthenticated = async (req, res, next) => {
         console.log('starting authentication...');
-        console.log('req.user: ', req.user); // Add this line
 
         if (req.isAuthenticated()) {
             res.locals.user = await PackageAuth.checkUser(req.user);
             console.log(`success auth of ${req.user}`)
             return next();
         }
+        console.log('not authenticated')
         res.status(401).send('Unauthorized');
     };
 
@@ -28,8 +30,8 @@ class qualityController {
     async checkBook(req, res) {
         try {
             let { id_book } = req.body;
-
-            const hasBook = await Package.checkBook(id_book)
+            console.log('checking book')
+            const hasBook = await Package.checkBook(id_book, res.locals.user[0].google_id)
             if (hasBook.length > 0) return res.status(200).json(true)
             else return res.status(200).json(false)
         } catch (error) {
@@ -39,21 +41,21 @@ class qualityController {
     }
 
     async getBooks(req, res) {
-        console.log('locals user: ', res.locals.user)
+        console.log('locals user: ', res.locals.user[0].google_id)
         const { chosen_page } = req.body
         const qnt_per_page = 5;
         const limit = 5;
         try {
-            const all_books = await Package.getBooks(chosen_page, qnt_per_page, limit);
+            const all_books = await Package.getBooks(chosen_page, qnt_per_page, limit, res.locals.user[0].google_id);
 
             for (let i = 0; i < all_books.length; i++) {
                 console.log(all_books[i].id)
-                let result = await Package.checkChapter(all_books[i].id)
+                let result = await Package.checkChapter(all_books[i].id, res.locals.user[0].google_id)
                 console.log(result)
                 if (result[0]) all_books[i].hasChapter = true
                 else all_books[i].hasChapter = false
             }
-            let total_pages = await Package.countPages();
+            let total_pages = await Package.countPages(res.locals.user[0].google_id);
             total_pages[0].count = Math.ceil(total_pages[0].count / qnt_per_page)
             return res.status(200).json({ all_books, pages: total_pages[0].count })
         } catch (error) {
@@ -64,8 +66,8 @@ class qualityController {
     async saveBook(req, res) {
         try {
             let { id, book_name, book_description, is_audiobook, audiobook_source } = req.body;
-            if (id) Package.editBook(id, book_name, book_description, is_audiobook, audiobook_source)
-            else Package.addBook(book_name, book_description, is_audiobook, audiobook_source)
+            if (id) Package.editBook(id, book_name, book_description, is_audiobook, audiobook_source, res.locals.user[0].google_id)
+            else Package.addBook(book_name, book_description, is_audiobook, audiobook_source, res.locals.user[0].google_id)
 
             return res.status(200).json({ message: 'Book has been added' })
         } catch (error) {
@@ -78,7 +80,7 @@ class qualityController {
         try {
             let { id_book } = req.body;
 
-            await Package.deleteBook(id_book)
+            await Package.deleteBook(id_book, res.locals.user[0].google_id)
             return res.status(200).json({ message: 'Book has been deleted' })
         } catch (error) {
             console.log(error);
@@ -93,12 +95,12 @@ class qualityController {
 
             switch (type) {
                 case 'subsection':
-                    await Package.deleteSubsection(id_contents)
+                    await Package.deleteSubsection(id_contents, res.locals.user[0].google_id)
                     break;
                 case 'section':
-                    await Package.deleteSection(id_contents)
+                    await Package.deleteSection(id_contents, res.locals.user[0].google_id)
                     break;
-                case 'chapter': await Package.deleteChapter(id_contents)
+                case 'chapter': await Package.deleteChapter(id_contents, res.locals.user[0].google_id)
                     break;
                 default:
                     return res.status(500).json({ message: "Undefined type of content" })
@@ -116,8 +118,7 @@ class qualityController {
     async getBookById(req, res) {
         try {
             let { id_book } = req.body;
-
-            const book = await Package.getBookById(id_book)
+            const book = await Package.getBookById(id_book, res.locals.user[0].google_id)
             if (book[0]) return res.status(200).json(book[0])
             else return res.status(404).json({ message: "Book not found" })
 
@@ -135,7 +136,7 @@ class qualityController {
         try {
             let { id_book } = req.body;
 
-            const chapters = await Package.getContents(id_book)
+            const chapters = await Package.getContents(id_book, res.locals.user[0].google_id)
 
             let contents = {};
             chapters.forEach((row) => {
@@ -188,16 +189,16 @@ class qualityController {
 
             switch (type) {
                 case 'chapter':
-                    if (id_contents) Package.editChapter(id_contents, name_contents)
-                    else Package.addChapter(id_book, name_contents)
+                    if (id_contents) Package.editChapter(id_contents, name_contents, res.locals.user[0].google_id)
+                    else Package.addChapter(id_book, name_contents, res.locals.user[0].google_id)
                     break;
                 case 'section':
-                    if (id_contents) Package.editSection(id_contents, name_contents)
-                    else Package.addSection(id_book, name_contents, parent_id)
+                    if (id_contents) Package.editSection(id_contents, name_contents, res.locals.user[0].google_id)
+                    else Package.addSection(id_book, name_contents, parent_id, res.locals.user[0].google_id)
                     break;
                 case 'subsection':
-                    if (id_contents) Package.editSubsection(id_contents, name_contents)
-                    else Package.addSubsection(id_book, name_contents, parent_id)
+                    if (id_contents) Package.editSubsection(id_contents, name_contents, res.locals.user[0].google_id)
+                    else Package.addSubsection(id_book, name_contents, parent_id, res.locals.user[0].google_id)
                     break;
                 default:
                     return res.status(500).json({ message: "Undefined type of content" })
@@ -221,13 +222,13 @@ class qualityController {
 
             switch (type) {
                 case 'chapter':
-                    contents = await Package.getChapters(id_book)
+                    contents = await Package.getChapters(id_book, res.locals.user[0].google_id)
                     break;
                 case 'section':
-                    contents = await Package.getSections(id_structure)
+                    contents = await Package.getSections(id_structure, res.locals.user[0].google_id)
                     break;
                 case 'subsection':
-                    contents = await Package.getSubsections(id_structure)
+                    contents = await Package.getSubsections(id_structure, res.locals.user[0].google_id)
                     break;
                 default:
                     return res.status(500).json({ message: "Undefined type of content" })
@@ -245,8 +246,8 @@ class qualityController {
         try {
             let { id_note, note_word, note_name, note_description, page, timecode, id_book, parent_structure, parent_type, note_type } = req.body;
             console.log('id_note: ', req.body)
-            if (id_note) Package.editNote(id_note, note_word, note_name, note_description, page, timecode, id_book, parent_structure, parent_type)
-            else Package.addNote(note_word, note_name, note_description, page, timecode, id_book, parent_structure, parent_type, note_type)
+            if (id_note) Package.editNote(id_note, note_word, note_name, note_description, page, timecode, id_book, parent_structure, parent_type, res.locals.user[0].google_id)
+            else Package.addNote(note_word, note_name, note_description, page, timecode, id_book, parent_structure, parent_type, note_type, res.locals.user[0].google_id)
 
             return res.status(200).json({ message: 'Note has been added' })
         } catch (error) {
@@ -261,9 +262,9 @@ class qualityController {
         const qnt_per_page = 5;
         const limit = 5;
         try {
-            const all_notes = await Package.getNotes(parent_structure, parent_type, contentsType, chosen_page, qnt_per_page, limit);
+            const all_notes = await Package.getNotes(parent_structure, parent_type, contentsType, chosen_page, qnt_per_page, limit, res.locals.user[0].google_id);
 
-            let total_pages = await Package.countNotes(contentsType);
+            let total_pages = await Package.countNotes(contentsType, res.locals.user[0].google_id);
             total_pages[0].count = Math.ceil(total_pages[0].count / qnt_per_page)
             console.log('pages: ', total_pages)
             return res.status(200).json({ notes: all_notes, pages: total_pages[0].count })
@@ -277,7 +278,7 @@ class qualityController {
         try {
             let { id_note } = req.body;
 
-            await Package.deleteNote(id_note)
+            await Package.deleteNote(id_note, res.locals.user[0].google_id)
             return res.status(200).json({ message: 'Note has been deleted' })
         } catch (error) {
             console.log(error);
@@ -293,8 +294,8 @@ class qualityController {
         try {
             let { id_video, video_name, video_link } = req.body;
 
-            if (id_video) Package.editVideo(id_video, video_name, video_link)
-            else Package.addVideo(video_name, video_link)
+            if (id_video) Package.editVideo(id_video, video_name, video_link, res.locals.user[0].google_id)
+            else Package.addVideo(video_name, video_link, res.locals.user[0].google_id)
 
             return res.status(200).json({ message: 'Video has been added' })
         } catch (error) {
@@ -307,7 +308,7 @@ class qualityController {
         try {
             let { id_video } = req.body;
 
-            const hasVideo = await Package.checkVideo(id_video)
+            const hasVideo = await Package.checkVideo(id_video, res.locals.user[0].google_id)
             if (hasVideo.length > 0) return res.status(200).json(true)
             else return res.status(200).json(false)
         } catch (error) {
@@ -322,9 +323,9 @@ class qualityController {
         const qnt_per_page = 5;
         const limit = 5;
         try {
-            const all_videos = await Package.getVideos(chosen_page, qnt_per_page, limit);
+            const all_videos = await Package.getVideos(chosen_page, qnt_per_page, limit, res.locals.user[0].google_id);
 
-            let total_pages = await Package.countVideos();
+            let total_pages = await Package.countVideos(res.locals.user[0].google_id);
             total_pages[0].count = Math.ceil(total_pages[0].count / qnt_per_page)
             console.log('pages: ', total_pages)
             return res.status(200).json({ videos: all_videos, pages: total_pages[0].count })
@@ -338,7 +339,7 @@ class qualityController {
         try {
             let { id_video } = req.body;
 
-            await Package.deleteVideo(id_video)
+            await Package.deleteVideo(id_video, res.locals.user[0].google_id)
             return res.status(200).json({ message: 'Video has been deleted' })
         } catch (error) {
             console.log(error);
@@ -351,8 +352,8 @@ class qualityController {
         try {
             console.log(req.body)
             let { id_note, video_word, video_phrase, video_explanation, id_video, timecode, note_type } = req.body;
-            if (id_note) Package.editVideoNote(id_note, video_word, video_phrase, video_explanation, id_video, timecode, note_type)
-            else Package.addVideoNote(video_word, video_phrase, video_explanation, id_video, timecode, note_type)
+            if (id_note) Package.editVideoNote(id_note, video_word, video_phrase, video_explanation, id_video, timecode, note_type, res.locals.user[0].google_id)
+            else Package.addVideoNote(video_word, video_phrase, video_explanation, id_video, timecode, note_type, res.locals.user[0].google_id)
             return res.status(200).json({ message: 'Note has been added' })
         } catch (error) {
             console.log(error);
@@ -366,9 +367,9 @@ class qualityController {
         const qnt_per_page = 5;
         const limit = 5;
         try {
-            const all_notes = await Package.getVideoNotes(contentsType, chosen_page, qnt_per_page, limit);
+            const all_notes = await Package.getVideoNotes(contentsType, chosen_page, qnt_per_page, limit, res.locals.user[0].google_id);
 
-            let total_pages = await Package.countVideoNotes(contentsType);
+            let total_pages = await Package.countVideoNotes(contentsType, res.locals.user[0].google_id);
             total_pages[0].count = Math.ceil(total_pages[0].count / qnt_per_page)
             console.log('pages: ', total_pages)
             return res.status(200).json({ notes: all_notes, pages: total_pages[0].count })
@@ -384,7 +385,7 @@ class qualityController {
         try {
             let { id_note } = req.body;
 
-            await Package.deleteVideoNote(id_note)
+            await Package.deleteVideoNote(id_note, res.locals.user[0].google_id)
             return res.status(200).json({ message: 'Note has been deleted' })
         } catch (error) {
             console.log(error);
