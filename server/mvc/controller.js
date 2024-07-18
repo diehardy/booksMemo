@@ -5,7 +5,7 @@ const PackageAuth = require("../auth/package")
 
 // USER
 
-// console.log('locals user: ', res.locals.user[0].google_id
+// locals user: res.locals.user[0].google_id
 
 
 class qualityController {
@@ -31,7 +31,7 @@ class qualityController {
         try {
             let { id_book } = req.body;
             const hasBook = await Package.checkBook(id_book, res.locals.user[0].google_id)
-            console.timeLog(`book_id: ${id_book} checked by user ${res.locals.user[0].google_id}`)
+            console.log(`book_id: ${id_book} checked by user ${res.locals.user[0].google_id}`)
             if (hasBook.length > 0) return res.status(200).json(true)
             else return res.status(200).json(false)
         } catch (error) {
@@ -55,7 +55,7 @@ class qualityController {
             }
             let total_pages = await Package.countPages(res.locals.user[0].google_id);
             total_pages[0].count = Math.ceil(total_pages[0].count / qnt_per_page)
-            console.timeLog(`a list of books gotten by user ${res.locals.user[0].google_id}`)
+            console.log(`a list of books gotten by user ${res.locals.user[0].google_id}`)
 
             return res.status(200).json({ all_books, pages: total_pages[0].count })
         } catch (error) {
@@ -239,7 +239,7 @@ class qualityController {
                 default:
                     return res.status(500).json({ message: "Undefined type of content" })
             }
-            console.log(`contents id: ${id_structure} with type: ${type} has been added by user ${res.locals.user[0].google_id}`)
+            console.log(`contents id: ${id_structure} with type: ${type} has been gotten by user ${res.locals.user[0].google_id}`)
             return res.status(200).json({ contents })
         } catch (error) {
             console.log('err getContentsById: ', error);

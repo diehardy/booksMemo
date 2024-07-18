@@ -170,9 +170,7 @@ export default {
                     if (!response.data) this.$router.push({ path: `/books` })
                 })
                 .catch((error) => {
-                    if (error) {
-                        console.log('Contents for this book are not found', error)
-                    }
+                    if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
                 });
         },
         getContentsByStructure(id_book, id_structure, type) {
@@ -194,9 +192,7 @@ export default {
                     }
                 })
                 .catch((error) => {
-                    if (error) {
-                        console.log('Contents for this book are not found', error)
-                    }
+                    if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
                 });
         },
         getBookById() {
@@ -206,9 +202,7 @@ export default {
                     this.book = response.data
                 })
                 .catch((error) => {
-                    if (error) {
-                        console.log('Contents for this book are not found', error)
-                    }
+                    if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
                 });
         },
         resetContents(type) {
@@ -254,9 +248,7 @@ export default {
                     this.getNotes(this.chosenContents, this.contentsType, this.chosen_page)
                 })
                 .catch((error) => {
-                    if (error) {
-                        console.log('Coudn`t add a note', error)
-                    }
+                    if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
                 });
             this.showAddingDialog = false
         },
@@ -299,9 +291,7 @@ export default {
                     console.log('notes', this.notes)
                 })
                 .catch((error) => {
-                    if (error) {
-                        console.log('Notes for this book are not found', error)
-                    }
+                    if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
                 });
         },
         deleteNote(id_note) {
@@ -309,9 +299,7 @@ export default {
                 .post("/delete-note", { id_note })
                 .then(() => { this.getNotes(this.chosenContents, this.contentsType, this.chosen_page) })
                 .catch((error) => {
-                    if (error) {
-                        console.log('Cannot be deleted because: ', error)
-                    }
+                    if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
                 });
         },
         formatTimecode(timecode) {

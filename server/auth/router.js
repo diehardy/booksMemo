@@ -30,7 +30,7 @@ passport.use(new GoogleStrategy({
 // serialize user into the session
 passport.serializeUser((user, done) => {
     console.log(`Initial serialize user:`);
-    console.log(user);
+    console.log(`id: ${user.id}, name: ${user.name}`);
 
     done(null, user.id)
 })
@@ -66,8 +66,8 @@ router.get("/google", passport.authenticate('google', { scope: ['profile', 'emai
 router.get('/google/callback',
     passport.authenticate('google', { failureRedirect: '/' }),
     (req, res) => {
-        console.log(req)
-        console.log(req.session) // here is id of user
+        // console.log(req)
+        // console.log(req.session) // here is id of user
         res.redirect(`${process.env.START_PAGE}`);
     }
 );

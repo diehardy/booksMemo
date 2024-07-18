@@ -82,7 +82,7 @@ export default {
                     this.getVideos(1)
                 })
                 .catch((error) => {
-                    console.log(error);
+                    if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
                 });
         },
         deleteVideo(id_video) {
@@ -92,7 +92,7 @@ export default {
                     this.getVideos(1)
                 })
                 .catch((error) => {
-                    console.log(error);
+                    if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
                 });
         },
         closeDialog() {
@@ -106,7 +106,7 @@ export default {
                     this.total_pages = response.data.pages
                 })
                 .catch((error) => {
-                    console.log(error);
+                    if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
                 });
             this.closeDialog()
         },

@@ -70,7 +70,7 @@ export default {
           else console.log('smth went wrong...')
         })
         .catch((error) => {
-          console.log(error);
+          if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
         });
     },
     getBookById(id_book) {
@@ -82,7 +82,7 @@ export default {
           this.book = { ...response.data }
         })
         .catch((error) => {
-          console.log(error);
+          if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
         });
     },
     saveBook(bookToSave) {
@@ -99,7 +99,7 @@ export default {
           this.getBooks(this.chosen_page)
         })
         .catch((error) => {
-          console.log(error);
+          if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
         });
     },
     updateAddingDialog(currentDialogueStatus) { this.showAudiobookDialogue = currentDialogueStatus },

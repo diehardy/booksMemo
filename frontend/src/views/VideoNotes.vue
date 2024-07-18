@@ -127,9 +127,7 @@ export default {
                     this.getVideoNotes()
                 })
                 .catch((error) => {
-                    if (error) {
-                        console.log('Coudn`t add a note', error)
-                    }
+                    if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
                 });
             this.showAddingDialog = false
         },
@@ -142,9 +140,7 @@ export default {
                     this.total_pages = response.data.pages
                 })
                 .catch((error) => {
-                    if (error) {
-                        console.log('Coudn`t add a note', error)
-                    }
+                    if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
                 });
         },
 
@@ -168,9 +164,7 @@ export default {
                 .post("/delete-video-note", { id_note })
                 .then(() => { this.getVideoNotes() })
                 .catch((error) => {
-                    if (error) {
-                        console.log('Cannot be deleted because: ', error)
-                    }
+                    if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
                 });
         },
         formatTimecode(timecode) {
@@ -205,9 +199,7 @@ export default {
                     if (!response.data) this.$router.push({ path: `/videos` })
                 })
                 .catch((error) => {
-                    if (error) {
-                        console.log('Cannot be deleted because: ', error)
-                    }
+                    if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
                 });
         }
     },

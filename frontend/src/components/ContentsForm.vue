@@ -148,7 +148,7 @@ export default {
                     })
                     .catch((error) => {
                         if (error) {
-                            console.log('Contents for this book are not found')
+                            if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
                         }
                     });
             }
@@ -170,7 +170,7 @@ export default {
                     this.$emit('updatedUnit');
                 })
                 .catch((error) => {
-                    console.log(error);
+                    if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
                 });
         },
         setContentUnit(unitData) {
@@ -185,7 +185,7 @@ export default {
                     this.$emit('updatedUnit');
                 })
                 .catch((error) => {
-                    console.log(error);
+                    if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
                 });
         },
 
