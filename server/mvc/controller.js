@@ -30,12 +30,12 @@ class qualityController {
     async checkBook(req, res) {
         try {
             let { id_book } = req.body;
-            console.log('checking book')
             const hasBook = await Package.checkBook(id_book, res.locals.user[0].google_id)
+            console.timeLog(`book_id: ${id_book} checked by user ${res.locals.user[0].google_id}`)
             if (hasBook.length > 0) return res.status(200).json(true)
             else return res.status(200).json(false)
         } catch (error) {
-            console.log(error);
+            console.log('err checkBook: ', error);
             return res.status(500).json({ message: "Something went wrong" })
         }
     }
@@ -49,17 +49,17 @@ class qualityController {
             const all_books = await Package.getBooks(chosen_page, qnt_per_page, limit, res.locals.user[0].google_id);
 
             for (let i = 0; i < all_books.length; i++) {
-                console.log(all_books[i].id)
                 let result = await Package.checkChapter(all_books[i].id, res.locals.user[0].google_id)
-                console.log(result)
                 if (result[0]) all_books[i].hasChapter = true
                 else all_books[i].hasChapter = false
             }
             let total_pages = await Package.countPages(res.locals.user[0].google_id);
             total_pages[0].count = Math.ceil(total_pages[0].count / qnt_per_page)
+            console.timeLog(`a list of books gotten by user ${res.locals.user[0].google_id}`)
+
             return res.status(200).json({ all_books, pages: total_pages[0].count })
         } catch (error) {
-            console.log(error);
+            console.log('err getBooks:', error);
             return res.status(500).json({ message: "Task coudn't be completed." })
         }
     }
@@ -68,10 +68,11 @@ class qualityController {
             let { id, book_name, book_description, is_audiobook, audiobook_source } = req.body;
             if (id) Package.editBook(id, book_name, book_description, is_audiobook, audiobook_source, res.locals.user[0].google_id)
             else Package.addBook(book_name, book_description, is_audiobook, audiobook_source, res.locals.user[0].google_id)
+            console.log(`book ${id} has been added by user ${res.locals.user[0].google_id}`)
 
             return res.status(200).json({ message: 'Book has been added' })
         } catch (error) {
-            console.log(error);
+            console.log('err saveBook', error);
             return res.status(500).json({ message: "Book hasn't been added" })
         }
     }
@@ -81,9 +82,10 @@ class qualityController {
             let { id_book } = req.body;
 
             await Package.deleteBook(id_book, res.locals.user[0].google_id)
+            console.log(`book ${id_book} has been deleted by user ${res.locals.user[0].google_id}`)
             return res.status(200).json({ message: 'Book has been deleted' })
         } catch (error) {
-            console.log(error);
+            console.log('err deleteBook: ', error);
             return res.status(500).json({ message: "Book hasn't been added" })
         }
     }
@@ -106,11 +108,12 @@ class qualityController {
                     return res.status(500).json({ message: "Undefined type of content" })
             }
 
+            console.log(`content of type: ${type} and id: ${id_contents} has been deleted by user ${res.locals.user[0].google_id}`)
 
-            return res.status(200).json({ message: 'Book has been deleted' })
+            return res.status(200).json({ message: 'Contents has been deleted' })
         } catch (error) {
-            console.log(error);
-            return res.status(500).json({ message: "Book hasn't been added" })
+            console.log('err deleteContents: ', error);
+            return res.status(500).json({ message: "Contents hasn't been added" })
         }
     }
 
@@ -119,11 +122,12 @@ class qualityController {
         try {
             let { id_book } = req.body;
             const book = await Package.getBookById(id_book, res.locals.user[0].google_id)
+            console.log(`book ${id_book} has been asked by user ${res.locals.user[0].google_id}`)
             if (book[0]) return res.status(200).json(book[0])
             else return res.status(404).json({ message: "Book not found" })
 
         } catch (error) {
-            console.log(error);
+            console.log('err getBookById: ', error);
             return res.status(500).json({ message: "Book hasn't been added" })
         }
     }
@@ -137,6 +141,7 @@ class qualityController {
             let { id_book } = req.body;
 
             const chapters = await Package.getContents(id_book, res.locals.user[0].google_id)
+            console.log(`contents of id_book: ${id_book} has been asked by user ${res.locals.user[0].google_id}`)
 
             let contents = {};
             chapters.forEach((row) => {
@@ -175,7 +180,7 @@ class qualityController {
             else return res.status(404).json({ message: "No contents" })
 
         } catch (error) {
-            console.log(error);
+            console.log('err getContents: ', error);
             return res.status(500).json({ message: "Error happened" })
         }
     }
@@ -203,10 +208,11 @@ class qualityController {
                 default:
                     return res.status(500).json({ message: "Undefined type of content" })
             }
+            console.log(`contents id: ${id_contents} with type: ${type} has been added by user ${res.locals.user[0].google_id}`)
 
             return res.status(200).json({ message: 'Content has been added' })
         } catch (error) {
-            console.log(error);
+            console.log('err saveContents', error);
             return res.status(500).json({ message: "Content hasn't been added" })
         }
     }
@@ -233,10 +239,10 @@ class qualityController {
                 default:
                     return res.status(500).json({ message: "Undefined type of content" })
             }
-
+            console.log(`contents id: ${id_structure} with type: ${type} has been added by user ${res.locals.user[0].google_id}`)
             return res.status(200).json({ contents })
         } catch (error) {
-            console.log(error);
+            console.log('err getContentsById: ', error);
             return res.status(500).json({ message: "Contents is not found" })
         }
     }
@@ -245,13 +251,12 @@ class qualityController {
     async saveNote(req, res) {
         try {
             let { id_note, note_word, note_name, note_description, page, timecode, id_book, parent_structure, parent_type, note_type } = req.body;
-            console.log('id_note: ', req.body)
             if (id_note) Package.editNote(id_note, note_word, note_name, note_description, page, timecode, id_book, parent_structure, parent_type, res.locals.user[0].google_id)
             else Package.addNote(note_word, note_name, note_description, page, timecode, id_book, parent_structure, parent_type, note_type, res.locals.user[0].google_id)
-
+            console.log(`note id: ${id_note} has been changed by user ${res.locals.user[0].google_id}`)
             return res.status(200).json({ message: 'Note has been added' })
         } catch (error) {
-            console.log(error);
+            console.log('err saveNote: ', error);
             return res.status(500).json({ message: "Note hasn't been added" })
         }
     }
@@ -266,10 +271,10 @@ class qualityController {
 
             let total_pages = await Package.countNotes(contentsType, res.locals.user[0].google_id);
             total_pages[0].count = Math.ceil(total_pages[0].count / qnt_per_page)
-            console.log('pages: ', total_pages)
+            console.log(`all notes of parent_id: ${parent_structure} and type: ${parent_type} has been gotten by user ${res.locals.user[0].google_id}`)
             return res.status(200).json({ notes: all_notes, pages: total_pages[0].count })
         } catch (error) {
-            console.log(error);
+            console.log('err getNotes: ', error);
             return res.status(500).json({ message: "Task coudn't be completed." })
         }
     }
@@ -279,9 +284,10 @@ class qualityController {
             let { id_note } = req.body;
 
             await Package.deleteNote(id_note, res.locals.user[0].google_id)
+            console.log(`note id: ${id_note} has been deleted by user ${res.locals.user[0].google_id}`)
             return res.status(200).json({ message: 'Note has been deleted' })
         } catch (error) {
-            console.log(error);
+            console.log('err deleteNote: ', error);
             return res.status(500).json({ message: "Note hasn't been added" })
         }
     }
@@ -296,10 +302,10 @@ class qualityController {
 
             if (id_video) Package.editVideo(id_video, video_name, video_link, res.locals.user[0].google_id)
             else Package.addVideo(video_name, video_link, res.locals.user[0].google_id)
-
-            return res.status(200).json({ message: 'Video has been added' })
+            console.log(`video id: ${id_video} has been changed by user ${res.locals.user[0].google_id}`)
+            return res.status(200).json({ message: 'Video has been added or changed' })
         } catch (error) {
-            console.log(error);
+            console.log('err saveVideo: ', error);
             return res.status(500).json({ message: "Video hasn't been added" })
         }
     }
@@ -309,10 +315,11 @@ class qualityController {
             let { id_video } = req.body;
 
             const hasVideo = await Package.checkVideo(id_video, res.locals.user[0].google_id)
+            console.log(`video id: ${id_video} has been checked by user ${res.locals.user[0].google_id}`)
             if (hasVideo.length > 0) return res.status(200).json(true)
             else return res.status(200).json(false)
         } catch (error) {
-            console.log(error);
+            console.log('err checkVideo: ', error);
             return res.status(500).json({ message: "Something went wrong" })
         }
     }
@@ -327,10 +334,10 @@ class qualityController {
 
             let total_pages = await Package.countVideos(res.locals.user[0].google_id);
             total_pages[0].count = Math.ceil(total_pages[0].count / qnt_per_page)
-            console.log('pages: ', total_pages)
+            console.log(`list of videos has been asked by user ${res.locals.user[0].google_id}`)
             return res.status(200).json({ videos: all_videos, pages: total_pages[0].count })
         } catch (error) {
-            console.log(error);
+            console.log('err getVideos: ', error);
             return res.status(500).json({ message: "Task coudn't be completed." })
         }
     }
@@ -340,9 +347,10 @@ class qualityController {
             let { id_video } = req.body;
 
             await Package.deleteVideo(id_video, res.locals.user[0].google_id)
+            console.log(`video id: ${id_video} has been delted by user ${res.locals.user[0].google_id}`)
             return res.status(200).json({ message: 'Video has been deleted' })
         } catch (error) {
-            console.log(error);
+            console.log('err deleteVideo: ', error);
             return res.status(500).json({ message: "Video hasn't been added" })
         }
     }
@@ -350,13 +358,13 @@ class qualityController {
     // VIDEO NOTES
     async saveVideoNote(req, res) {
         try {
-            console.log(req.body)
             let { id_note, video_word, video_phrase, video_explanation, id_video, timecode, note_type } = req.body;
             if (id_note) Package.editVideoNote(id_note, video_word, video_phrase, video_explanation, id_video, timecode, note_type, res.locals.user[0].google_id)
             else Package.addVideoNote(video_word, video_phrase, video_explanation, id_video, timecode, note_type, res.locals.user[0].google_id)
+            console.log(`video note id: ${id_note} has been added by user ${res.locals.user[0].google_id}`)
             return res.status(200).json({ message: 'Note has been added' })
         } catch (error) {
-            console.log(error);
+            console.log('err saveVideoNote: ', error);
             return res.status(500).json({ message: "Note hasn't been added" })
         }
     }
@@ -371,10 +379,10 @@ class qualityController {
 
             let total_pages = await Package.countVideoNotes(contentsType, res.locals.user[0].google_id);
             total_pages[0].count = Math.ceil(total_pages[0].count / qnt_per_page)
-            console.log('pages: ', total_pages)
+            console.log(`list of notes has been asked by user ${res.locals.user[0].google_id}`)
             return res.status(200).json({ notes: all_notes, pages: total_pages[0].count })
         } catch (error) {
-            console.log(error);
+            console.log('err getVideoNotes: ', error);
             return res.status(500).json({ message: "Task coudn't be completed." })
         }
     }
@@ -386,10 +394,11 @@ class qualityController {
             let { id_note } = req.body;
 
             await Package.deleteVideoNote(id_note, res.locals.user[0].google_id)
+            console.log(`video note id: ${id_note} has been deletedd by user ${res.locals.user[0].google_id}`)
             return res.status(200).json({ message: 'Note has been deleted' })
         } catch (error) {
-            console.log(error);
-            return res.status(500).json({ message: "Note hasn't been added" })
+            console.log('err deleteVideoNotes: ', error);
+            return res.status(500).json({ message: "Note hasn't been deleted" })
         }
     }
 
