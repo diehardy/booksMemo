@@ -39,6 +39,19 @@ class qualityController {
     }
 
 
+    async logout(req, res) {
+        try {
+            req.logout(function (err) {
+                if (err) { return res.status(500) }
+                return res.status(200)
+            });
+        } catch (error) {
+            console.log('err logout: ', error);
+            return res.status(500).json({ message: "Something went wrong" })
+        }
+    }
+
+
     // BOOKS
 
     async checkBook(req, res) {

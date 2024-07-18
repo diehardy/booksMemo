@@ -14,15 +14,16 @@
 
                 <v-list density="compact" nav>
                     <RouterLink to="/books" :class="{ 'router-link-exact-active': isBook }">
-                        <v-list-item prepend-icon="mdi-bookshelf" title="Books" value=""></v-list-item>
+                        <v-list-item prepend-icon="mdi-bookshelf" title="Books" value="Books"></v-list-item>
                     </RouterLink>
                     <RouterLink to="/videos" :class="{ 'router-link-exact-active': isVideo }">
-                        <v-list-item prepend-icon="mdi-play-box-multiple" title="Videos" value="about"></v-list-item>
+                        <v-list-item prepend-icon="mdi-play-box-multiple" title="Videos" value="Videos"></v-list-item>
                     </RouterLink>
                     <RouterLink to="/settings">
-                        <v-list-item prepend-icon="mdi-cog-outline" title="Settings" value="about"></v-list-item>
+                        <v-list-item prepend-icon="mdi-cog-outline" title="Settings" value="Settings"></v-list-item>
                     </RouterLink>
-
+                    <v-list-item @click="logout()" prepend-icon="mdi-logout" title="Logout"
+                        value="Logout"></v-list-item>
                 </v-list>
 
             </v-navigation-drawer>
@@ -55,6 +56,16 @@ export default {
                     if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
                 });
         },
+        logout() {
+            httpServer
+                .post("/logout")
+                .then((response) => {
+                    console.log(response.data)
+                })
+                .catch((error) => {
+                    if (error.response.status === 401 || error.response.status === 200 || error.response.status === 500) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
+                });
+        }
     },
     computed: {
         isBook() {
