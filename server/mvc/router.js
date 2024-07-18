@@ -2,7 +2,8 @@ const Router = require("express");
 const router = new Router();
 const controller = require("./controller");
 
-
+// USER
+router.get("/get-user", controller.isAuthenticated, controller.getUserProfile);
 // BOOKS
 router.post("/get", controller.isAuthenticated, controller.getBooks);
 

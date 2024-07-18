@@ -8,9 +8,7 @@
             <v-navigation-drawer v-model="drawer" class="v-navigation-drawer" color="white">
                 <v-list-item class="menu-btn" append-icon=" mdi-close" @click.stop="drawer = !drawer"></v-list-item>
 
-                <v-list-item
-                    prepend-avatar="https://t3.ftcdn.net/jpg/05/02/46/42/360_F_502464267_VlxSlxp5trEnRurdfYP5y0QW9JCCiTQ7.jpg"
-                    title="DiHardy"></v-list-item>
+                <v-list-item :prepend-avatar="user.icon" :title="user.name"></v-list-item>
 
                 <v-divider></v-divider>
 
@@ -35,12 +33,28 @@
     </v-card>
 </template>
 <script>
+import { httpServer } from "@/main"
+
 export default {
+
     data() {
         return {
             drawer: null,
-            isMobile: navigator.userAgentData.mobile
+            isMobile: navigator.userAgentData.mobile,
+            user: {},
         }
+    },
+    methods: {
+        getUserProfile() {
+            httpServer
+                .get("/get-user")
+                .then((response) => {
+                    this.user = response.data;
+                })
+                .catch((error) => {
+                    if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
+                });
+        },
     },
     computed: {
         isBook() {
@@ -50,6 +64,9 @@ export default {
             return this.$route.path === '/videos' || this.$route.path.startsWith('/video/');
 
         }
+    },
+    mounted() {
+        this.getUserProfile()
     }
 }
 </script>

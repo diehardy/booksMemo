@@ -23,6 +23,20 @@ class qualityController {
     };
 
 
+    // USER
+    async getUserProfile(req, res) {
+        try {
+            const user = {
+                name: res.locals.user[0].name,
+                email: res.locals.user[0].email,
+                icon: res.locals.user[0].icon
+            }
+            return res.status(200).json(user)
+        } catch (error) {
+            console.log('err getUserProfile: ', error);
+            return res.status(500).json({ message: "Something went wrong" })
+        }
+    }
 
 
     // BOOKS
