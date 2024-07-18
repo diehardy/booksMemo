@@ -10,7 +10,10 @@ const routes = [
   {
     path: '',
     name: 'LandingPage',
-    component: LandingPage
+    component: LandingPage,
+    meta: {
+      hideNavbar: true,
+    }
   },
   {
     path: '/books',
