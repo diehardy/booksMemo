@@ -58,12 +58,12 @@ export default {
         },
         logout() {
             httpServer
-                .post("/logout")
+                .post("/logout", {}, { withCredentials: true })
                 .then((response) => {
-                    console.log(response.data)
+                    if (response.status === 200) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
                 })
                 .catch((error) => {
-                    if (error.response.status === 401 || error.response.status === 200 || error.response.status === 500) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
+                    if (error.response.status === 401 || error.response.status === 500) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
                 });
         }
     },

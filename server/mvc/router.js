@@ -4,7 +4,7 @@ const controller = require("./controller");
 
 // USER
 router.get("/get-user", controller.isAuthenticated, controller.getUserProfile);
-router.post("/logout", controller.isAuthenticated, controller.logout);
+router.post("/logout", controller.logout);
 
 
 // BOOKS

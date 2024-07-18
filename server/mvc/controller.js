@@ -42,14 +42,36 @@ class qualityController {
     async logout(req, res) {
         try {
             req.logout(function (err) {
-                if (err) { return res.status(500) }
-                return res.status(200)
+                console.log('starting logout...')
+                if (err) {
+                    console.log('err: ', err);
+                    return res.status(500).json({ message: "Logout failed" });
+                }
+                req.session.destroy((err) => {
+                    if (err) {
+                        console.log('session destroy err: ', err)
+                        return res.status(500).json({ message: 'Logout failed' })
+                    }
+
+                    res.clearCookie("connect.sid");
+                    console.log('successful logout')
+                    return res.status(200).json({ message: "Logout successful" });
+
+                }
+
+
+
+                )
+
+
+
             });
         } catch (error) {
             console.log('err logout: ', error);
-            return res.status(500).json({ message: "Something went wrong" })
+            return res.status(500).json({ message: "Something went wrong" });
         }
     }
+
 
 
     // BOOKS
