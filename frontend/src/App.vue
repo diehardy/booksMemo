@@ -1,7 +1,6 @@
 <template>
   <v-container>
     <SideMenu v-show="!$route.meta.hideNavbar" />
-
     <router-view />
   </v-container>
 </template>
