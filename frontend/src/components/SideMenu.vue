@@ -46,13 +46,15 @@ export default {
 
     data() {
         return {
-
             drawer: null,
-            isMobile: navigator.userAgentData.mobile,
+            isMobile: this.checkIfMobile(),
             user: {},
         }
     },
     methods: {
+        checkIfMobile() {
+            return window.matchMedia("(max-width: 767px)").matches;
+        },
         getUserProfile() {
             httpServer
                 .get("/get-user")
