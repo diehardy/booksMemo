@@ -1,5 +1,5 @@
 <template>
-    <v-card style="width: 80px; z-index: 999999 !important; ">
+    <v-card style="width: 80px; z-index: 999998 !important; position: relative; ">
         <v-fab icon="mdi-menu" @click.stop="drawer = !drawer" v-if="isMobile" variant="flat" color="grey-darken-2"
             class="mobile-btn"></v-fab>
 
@@ -24,6 +24,12 @@
                     </RouterLink>
                     <v-list-item @click="logout()" prepend-icon="mdi-logout" title="Logout"
                         value="Logout"></v-list-item>
+                    <!-- <v-list-item><v-select label="Select" width="200px" class="mx-auto"
+                            :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"></v-select></v-list-item> -->
+
+                    <!-- <v-select label="Select" width="200px" class="mx-auto"
+                        :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"></v-select> -->
+
                 </v-list>
 
             </v-navigation-drawer>
@@ -40,6 +46,7 @@ export default {
 
     data() {
         return {
+
             drawer: null,
             isMobile: navigator.userAgentData.mobile,
             user: {},
@@ -96,3 +103,6 @@ export default {
     right: 0px;
 }
 </style>
+
+<!-- <v-btn @click="this.$i18n.locale == 'en' ? this.$i18n.locale = 'ru' : this.$i18n.locale = 'en'">change
+            locale</v-btn> -->

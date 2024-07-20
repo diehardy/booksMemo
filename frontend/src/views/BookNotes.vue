@@ -1,6 +1,7 @@
 <template>
     <div>
         <h1 class="mt-2 text-uppercase ">Book notes</h1>
+
         <!-- DIALOG ADDING/EDITING LEARNING NOTE-->
         <v-dialog max-width="500" v-model="showAddingDialog">
             <v-card :title="noteContents.id ? 'Add a new note' : 'Editing a note'">

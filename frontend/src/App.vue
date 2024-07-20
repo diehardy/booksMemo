@@ -15,7 +15,7 @@ export default {
 </script>
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans', Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -34,5 +34,12 @@ nav a {
 
 nav a.router-link-exact-active {
   color: #42a5b9;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('./fonts/OpenSans.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
 </style>

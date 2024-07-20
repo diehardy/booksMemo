@@ -6,7 +6,7 @@ import { loadFonts } from './plugins/webfontloader'
 import '@mdi/font/css/materialdesignicons.min.css';
 import router from './router'
 import axios from "axios";
-import { createI18n } from 'vue-i18n'
+// import { createI18n } from 'vue-i18n'
 
 loadFonts()
 
@@ -26,25 +26,26 @@ export const authServer = axios.create({
 });
 
 
-const i18n = createI18n({
-  locale: 'ru',
-  fallbackLocale: 'en',
-  messages: {
-    en: {
-      title: {
-        projectName: 'Books memo EN'
-      },
-    },
-    ru: {
-      title: {
-        projectName: 'Books memo RU'
-      }
-    }
-  }
-})
+// const i18n = createI18n({
+//   locale: 'ru',
+//   fallbackLocale: 'en',
+//   messages: {
+//     en: {
+//       title: {
+//         projectName: 'Books memo'
+//       },
+//     },
+//     ru: {
+//       title: {
+//         projectName: 'Books memo'
+//       }
+//     }
+//   }
+// })
 
 
 createApp(App).use(router)
   .use(vuetify)
-  .use(i18n)
   .mount('#app')
+
+// .use(i18n)
