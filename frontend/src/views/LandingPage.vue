@@ -21,7 +21,7 @@
 
 
         <h2 class="my-2">Start learning</h2>
-        <a href="https:///api/auth/google">
+        <a href="https://dailyguidetips.com/api/auth/google">
             <v-btn color="#1697F6" prepend-icon="mdi-google">Sign in with Google</v-btn>
         </a>
     </div>
