@@ -8,7 +8,7 @@ const authRouter = require("./auth/router")
 // cors
 const cors = require("cors");
 let corsOptions = {
-    origin: "http://localhost:8080",
+    origin: "http://147.45.246.190/:8080",
     credentials: true,            //access-control-allow-credentials:true
     optionSuccessStatus: 200
 };
