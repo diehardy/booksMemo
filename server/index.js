@@ -8,10 +8,11 @@ const authRouter = require("./auth/router")
 // cors
 const cors = require("cors");
 let corsOptions = {
-    origin: "dailyguidetips.com",
+    origin: "https://dailyguidetips.com",
     credentials: true,            //access-control-allow-credentials:true
     optionSuccessStatus: 200
 };
+
 
 const app = express();
 const passport = require('passport')
