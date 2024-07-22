@@ -31,6 +31,7 @@ class qualityController {
                 email: res.locals.user[0].email,
                 icon: res.locals.user[0].icon
             }
+            console.log('getting users...', user)
             return res.status(200).json(user)
         } catch (error) {
             console.log('err getUserProfile: ', error);

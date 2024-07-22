@@ -66,7 +66,7 @@ router.get("/google", passport.authenticate('google', { scope: ['profile', 'emai
 router.get('/google/callback',
     passport.authenticate('google', { failureRedirect: '/' }),
     (req, res) => {
-        // console.log(req)
+        console.log(req)
         // console.log(req.session) // here is id of user
         res.redirect(`${process.env.START_PAGE}`);
     }
