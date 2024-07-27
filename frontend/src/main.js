@@ -10,8 +10,8 @@ import axios from "axios";
 
 loadFonts()
 
-const API = 'http://85.193.81.203/api/books/'
-const authAPI = 'http://85.193.81.203/api/auth/'
+const API = 'https://dailyguidetips.com/api/books/'
+const authAPI = 'https://dailyguidetips.com/api/auth/'
 
 export const httpServer = axios.create({
   withCredentials: true,
