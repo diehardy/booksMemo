@@ -8,7 +8,7 @@ const authRouter = require("./auth/router")
 // cors
 const cors = require("cors");
 let corsOptions = {
-    origin: "https://dailyguidetips.com",
+    origin: "http://85.193.81.203/",
     credentials: true,            //access-control-allow-credentials:true
     optionSuccessStatus: 200
 };
