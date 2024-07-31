@@ -13,11 +13,13 @@
     <BookCards :list_of_books="list_of_books" @deleteBook="deleteBook" @editBook="getBookById"
       @dialogAdd="updateAddingDialog" @dialogContents="updateContentsDialog" />
 
-
-    <v-pagination color="grey-darken-2" :length="total_pages" v-model="chosen_page"
-      v-show="list_of_books.length > 0"></v-pagination>
-
-
+    <!-- When you have lots of attributes, it's better to split them one per line -->
+    <v-pagination
+      color="grey-darken-2"
+      :length="total_pages"
+      v-model="chosen_page"
+      v-show="list_of_books.length > 0"
+    />
   </div>
 </template>
 
@@ -36,7 +38,7 @@ export default {
       book: {
         id: null,
         name: null,
-        escription: null,
+        escription: null, // description :)
         is_audiobook: false,
         audiobook_source: null,
       },
@@ -53,11 +55,15 @@ export default {
       httpServer
         .post("/get", { chosen_page: chosen_page })
         .then((response) => {
+          // Using camelCase is the standard in JS
+          // this.total_pages => this.totalPages
           this.total_pages = response.data.pages
           this.list_of_books = response.data.all_books
         })
         .catch((error) => {
-          if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
+          if (error.response.status === 401) {
+            this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
+          }
         });
     },
     deleteBook(id_book) {
@@ -85,6 +91,9 @@ export default {
           if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
         });
     },
+    // the method saveBook is used only in one component, I would move it there
+    // and send bookToSave to it as a prop
+    // it will make this component thinner, and this move slightly reminds about S in SOLID
     saveBook(bookToSave) {
       httpServer
         .post("/save", {
@@ -119,8 +128,5 @@ export default {
 }
 </script>
 
-<style>
-.new-line {
-  white-space: pre-wrap;
-}
+<style scoped>
 </style>

@@ -62,14 +62,21 @@ export default {
                     this.user = response.data;
                 })
                 .catch((error) => {
-                    if (error.response.status === 401) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
+                  // added `error.response` because it will throw an error if error object
+                  // doesn't have response property
+                  if (error.response && error.response.status === 401) {
+                    this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
+                  }
                 });
         },
         logout() {
             httpServer
                 .post("/logout", {}, { withCredentials: true })
                 .then((response) => {
-                    if (response.status === 200) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
+                    // you should never use inline if/for/switch statements, always use {}
+                    if (response.status === 200) {
+                      this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
+                    }
                 })
                 .catch((error) => {
                     if (error.response.status === 401 || error.response.status === 500) this.$router.push(process.env.VUE_APP_LOGIN_PAGE)
